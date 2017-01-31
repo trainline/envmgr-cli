@@ -1,0 +1,14 @@
+# Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
+
+exclude .gitignore
+exclude .coverage
+exclude contributors
+include README.rst
+include setup.cfg
+include LICENSE.txt
+include NOTICE.txt
+prune .cache
+prune .git
+prune build
+prune dist
+recursive-exclude *.egg-info *
