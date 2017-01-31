@@ -18,7 +18,7 @@ Examples:
 
 Help:
   For help using this tool, please open an issue on the Github repository:
-  https://github.com/trainline/python-environment_manager
+  https://github.com/trainline/envmgr-cli
 """
 
 import sys
@@ -30,7 +30,7 @@ from . import __version__ as VERSION
 def except_hook(exec_type, value, trace_back):
     print(value)
 
-sys.excepthook = except_hook
+# sys.excepthook = except_hook
 
 def main():
     """Main CLI entrypoint."""

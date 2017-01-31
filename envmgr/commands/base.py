@@ -29,7 +29,7 @@ class BaseCommand(object):
         host = os.environ['ENVMGR_HOST']
         user = os.environ['ENVMGR_USER']
         pwrd = os.environ['ENVMGR_PASS']
-        self.api =  EMApi(server=host, user=user, password=pwrd, retries=1)
+        self.api = EMApi(server=host, user=user, password=pwrd, retries=1)
 
 
     def run(self):

@@ -16,22 +16,25 @@ class ASG(BaseCommand):
 
 
     def schedule(self, env, name):        
-        params = {'environment':env, 'asgname':name}
+        data = {'propagateToInstances':True}
 
         if self.cmds['on']:
-            params['schedule'] = 'ON'
+            data['schedule'] = 'ON'
         elif self.cmds['off']:
-            params['schedule'] = 'OFF'
+            data['schedule'] = 'OFF'
         elif self.cmds['default']:
-            params['schedule'] = ''
+            data['schedule'] = ''
         else:
-            params['schedule'] = self.opts['chron']
+            data['schedule'] = self.opts['cron']
 
+        params = {'environment':env, 'asgname':name, 'data':data}
         result = self.api.put_asg_scaling_schedule(**params)
+
         n = len(result['ChangedInstances'])
         i = 'instance' if n == 1 else 'instances'
-        s = 'default' if self.cmds['default'] else params['schedule']
-        print("Scheduled {0} {1} in {2} to '{3}'".format(n, i, name, s))
+        s = 'default' if self.cmds['default'] else data['schedule']
+        
+        print("Scheduled {0} {1} in {2} to: {3}".format(n, i, name, s))
 
 
     def wait(self, env, name):
