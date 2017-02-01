@@ -23,7 +23,8 @@ setup(
     install_requires = [
         'docopt',
         'requests',
-        'simplejson'
+        'simplejson',
+        'environment_manager'
     ],
     entry_points = {
         'console_scripts': [

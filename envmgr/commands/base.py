@@ -3,7 +3,7 @@
 import os
 import re
 
-from envmgr.core import EMApi
+from environment_manager import EMApi
 
 class BaseCommand(object):
 
