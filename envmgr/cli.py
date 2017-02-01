@@ -5,7 +5,7 @@ Usage:
   envmgr accounts
   envmgr asg schedule <name> (on|off|default|--cron=<expression>) in <env>
   envmgr asg wait-for <name> in <env>
-  envmgr svc get-slices <env> <name>
+  envmgr get <service> [<slice>] health in <env>
   envmgr -h | --help
   envmgr --version
 
@@ -41,7 +41,7 @@ def main():
         if hasattr(envmgr.commands, k) and v:
             module = getattr(envmgr.commands, k)
             envmgr.commands = getmembers(module, isclass)
-            command = [command[1] for command in envmgr.commands if command[0] != 'Base'][0]
+            command = [command[1] for command in envmgr.commands if command[0] != 'BaseCommand'][0]
             command = command(options)
             command.run()
 
