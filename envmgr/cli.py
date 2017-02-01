@@ -5,7 +5,8 @@ Usage:
   envmgr accounts
   envmgr asg schedule <name> (on|off|default|--cron=<expression>) in <env>
   envmgr asg wait-for <name> in <env>
-  envmgr get <service> [<slice>] health in <env>
+  envmgr get <service> health in <env> [<slice>]
+  envmgr get <service> (active|inactive) slice in <env>
   envmgr -h | --help
   envmgr --version
 
