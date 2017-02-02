@@ -7,6 +7,7 @@ Usage:
   envmgr asg wait-for <name> in <env>
   envmgr get <service> health in <env> [<slice>]
   envmgr get <service> (active|inactive) slice in <env>
+  envmgr publish <service> <version> <file>
   envmgr -h | --help
   envmgr --version
 

@@ -13,7 +13,7 @@ class GetService(BaseCommand):
                 self.get_overall_health(**self.cli_args)
         elif self.cmds['slice']:
             self.get_service_slice(**self.cli_args)
-
+    
 
     def get_overall_health(self, service, env):
         result = self.api.get_service_overall_health(service, env)
