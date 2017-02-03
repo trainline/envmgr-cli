@@ -1,11 +1,3 @@
 
-reload: uninstall rebuild install
-
-uninstall:
-	pip uninstall -y envmgr
-
-install:
-	pip install dist/**.whl
-
-rebuild:
+dist:
 	python setup.py sdist bdist_wheel
