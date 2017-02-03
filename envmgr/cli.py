@@ -8,6 +8,7 @@ Usage:
   envmgr get <service> health in <env> [<slice>]
   envmgr get <service> (active|inactive) slice in <env>
   envmgr publish <service> <version> <file>
+  envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run]
   envmgr -h | --help
   envmgr --version
 

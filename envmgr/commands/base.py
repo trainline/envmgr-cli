@@ -17,7 +17,7 @@ class BaseCommand(object):
         for (k, v) in options.items():
             if v is not None:
                 cli_arg = re.search('\<([\w\-]+)\>', k)
-                cli_opt = re.search('^\-\-([a-zA-Z0-9]+[\w\-])+', k)
+                cli_opt = re.search('^\-\-([a-zA-Z0-9]+[\w\-]+)', k)
 
                 if cli_arg is not None:
                     self.cli_args[cli_arg.group(1)] = v
