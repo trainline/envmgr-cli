@@ -9,11 +9,13 @@ A cross-platform CLI client for `Environment Manager`_.
 publish
 --------
 .. code:: sh
+
   envmgr publish build-022.zip as AwesomeService 1.0.22
 
 deploy
 --------
 .. code:: sh
+
   envmgr deploy AweseomService 1.0.22 in prod-1
 
 
