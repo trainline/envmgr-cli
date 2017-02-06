@@ -9,8 +9,10 @@ class ASG(BaseCommand):
     def run(self):
         if self.cmds['schedule']:
             self.schedule(**self.cli_args)
+        elif self.cmds['status']:
+            self.get_status(**self.cli_args)
         elif self.cmds['wait-for']:
-            self.wait(**self.cli_args)
+            self.wait_for(**self.cli_args)
         else:
             print("Unknown ASG command")
 
@@ -34,16 +36,29 @@ class ASG(BaseCommand):
         i = 'instance' if n == 1 else 'instances'
         s = 'default' if self.cmds['default'] else data['schedule']
         
-        print("Scheduled {0} {1} in {2} to: {3}".format(n, i, name, s))
+        self.show_result(result, "Scheduled {0} {1} in {2} to: {3}".format(n, i, name, s))
 
 
-    def wait(self, env, name):
+    def get_status(self, env, name):
+        result = self.api.get_asg_ready(env, name)
+        is_ready = result["ReadyToDeploy"]
+
+        if is_ready:
+            self.show_result(result, "{0} is ready for deployments".format(name))
+        else:
+            n_total = result['InstancesTotalCount']
+            states = map(lambda (state,count): "{0}={1}".format(state, count), 
+                    result['InstancesByLifecycleState'].iteritems())
+            self.show_result(result, "{0} is not ready for deployment (instances: {1}, Total={2})".format(name, ", ".join(states), n_total))
+
+        return is_ready 
+
+
+    def wait_for(self, env, name):
         while True:
-            result = self.api.get_asg_ready(env, name)
-            if result["ReadyToDeploy"]:
-                print("{0} is ready for deployments".format(name))
+            is_ready = self.get_status(env, name)
+            if is_ready:
                 return
             else:
-                print("Waiting for {0}...".format(name))
                 time.sleep(10)
 

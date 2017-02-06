@@ -2,6 +2,7 @@
 
 import os
 import re
+import json
 
 from environment_manager import EMApi
 
@@ -34,4 +35,15 @@ class BaseCommand(object):
 
     def run(self):
         raise NotImplementedError('Subclass does not implement run')
+
+    
+
+
+    def show_result(self, result, message):
+        if self.opts['json']:
+            print(json.dumps(result))
+        elif isinstance(message, list):
+            print(os.linesep.join(message))
+        else:
+            print(message)
 

@@ -8,6 +8,6 @@ class Accounts(BaseCommand):
     def run(self):
         
         stuff = self.api.get_accounts_config()
-        print(stuff)
+        self.show_result(stuff, "A nice message about accounts")
 
 
