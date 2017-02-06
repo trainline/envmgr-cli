@@ -16,7 +16,7 @@ deploy
 --------
 .. code:: sh
 
-  envmgr deploy AweseomService 1.0.22 in prod-1
+  envmgr deploy AwesomeService 1.0.22 in prod-1
 
 
 .. _`Environment Manager`: https://github.com/trainline/environment-manager  
