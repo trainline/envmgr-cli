@@ -2,31 +2,37 @@
 envmgr
 
 Usage:
-  envmgr get <service> health in <env> [<slice>] [--json]
-  envmgr get <service> (active|inactive) slice in <env> [--json]
-  envmgr get asg <name> status in <env> [--json]
-  envmgr get deploy status <deploy_id> --json
-  envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> [--json]
-  envmgr wait-for asg <name> in <env> [--json]
-  envmgr publish <service> <version> <file>
-  envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json]
-  envmgr -h | --help
-  envmgr --version
+    envmgr get <service> health in <env> [<slice>] [--json]
+    envmgr get <service> (active|inactive) slice in <env> [--json]
+    envmgr get asg <name> status in <env> [--json]
+    envmgr get deploy status <deploy_id> [--json]
+    envmgr wait-for deploy <deploy_id> [--json]
+    envmgr wait-for asg <name> in <env> [--json]
+    envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> [--json]
+    envmgr publish <file> as <service> <version>
+    envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json]
+    envmgr -h | --help
+    envmgr --version
 
 Options:
-  -d --dry-run      Validate a deployment request without actually performing a deployment
-  -j --json         Output the raw json response from Environment Manager
-  -h --help         Show this screen.
-  --version         Show version.
+    -d --dry-run      Validate a deployment request without actually performing a deployment
+    -j --json         Output the raw json response from Environment Manager
+    -h --help         Show this screen.
+    -v --version      Show version.
 
 Examples:
-  envmgr asg schedule my-asg on in prod-1
-  envmgr asg wait-for my-asg in prod-1
-  envmgr get MyService health in stage-2
+    envmgr get MyService health in prod-1
+    envmgr get MyService active slice in prod-1
+    envmgr get asg my-asg status in prod-1
+    envmgr schedule asg my-asg on in prod-1
+    envmgr wait-for asg my-asg in prod-1
 
 Help:
-  For help using this tool, please open an issue on the Github repository:
-  https://github.com/trainline/envmgr-cli
+    For help using this tool, please open an issue on the Github repository:
+    https://github.com/trainline/envmgr-cli
+
+    For information on Environment Manager, see the official documentation:
+    https://trainline.github.io/environment-manager/
 """
 
 import sys
@@ -38,14 +44,14 @@ from . import __version__ as VERSION
 def except_hook(exec_type, value, trace_back):
     print(value)
 
-# sys.excepthook = except_hook
+sys.excepthook = except_hook
 
 def main():
     """Main CLI entrypoint."""
     import envmgr.commands
     
     options = docopt(__doc__, version=VERSION)
-    priority_order = ["asg", "get", "deploy", "publish"]
+    priority_order = ["asg", "deploy", "get", "publish"]
 
     for cmd in priority_order:
         if options[cmd]:

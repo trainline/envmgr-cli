@@ -1,12 +1,19 @@
 """Publish a service package to S3"""
 
+import time
+
 from json import dumps
 from envmgr.commands.base import BaseCommand
 
 class Deploy(BaseCommand):
 
     def run(self):
-        self.deploy_service(**self.cli_args)
+        if self.cmds["wait-for"]:
+            self.wait_for_deployment(**self.cli_args)
+        elif self.cmds["status"]:
+            self.get_deploy_status(**self.cli_args)
+        else:
+            self.deploy_service(**self.cli_args)
 
 
     def deploy_service(self, service, version, env, slice=None):        
@@ -29,4 +36,15 @@ class Deploy(BaseCommand):
     
     def get_deploy_status(self, deploy_id):
         result = self.api.get_deployment(deploy_id)
-        self.show_result(result, "Status: {0}".format(result['Value']['Status']))
+        self.show_result(result, "Deployment: {0}".format(result['Value']['Status']))
+        return result
+
+    
+    def wait_for_deployment(self, deploy_id):
+        while True:
+            result = self.get_deploy_status(deploy_id)
+            status = result['Value']['Status']
+            if status == "Failed" or status == "Success":
+                return
+            else:
+                time.sleep(10)
