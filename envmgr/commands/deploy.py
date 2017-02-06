@@ -26,3 +26,7 @@ class Deploy(BaseCommand):
         result = self.api.post_deployments(dry_run, data)
         print(result)
 
+    
+    def get_deploy_status(self, deploy_id):
+        result = self.api.get_deployment(deploy_id)
+        self.show_result(result, "Status: {0}".format(result['Value']['Status']))

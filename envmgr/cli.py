@@ -2,11 +2,12 @@
 envmgr
 
 Usage:
-  envmgr asg schedule <name> (on|off|default|--cron=<expression>) in <env> [--json]
-  envmgr asg get <name> status in <env> [--json]
-  envmgr asg wait-for <name> in <env> [--json]
   envmgr get <service> health in <env> [<slice>] [--json]
   envmgr get <service> (active|inactive) slice in <env> [--json]
+  envmgr get asg <name> status in <env> [--json]
+  envmgr get deploy status <deploy_id> --json
+  envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> [--json]
+  envmgr wait-for asg <name> in <env> [--json]
   envmgr publish <service> <version> <file>
   envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json]
   envmgr -h | --help
