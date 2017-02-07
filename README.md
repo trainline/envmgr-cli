@@ -6,6 +6,7 @@ A cross-platform CLI client for [Environment Manager](https://github.com/trainli
 ```
 pip install envmgr
 ```
+_See [Configuration](#configuration) for further install instructions._
 
 ## Usage
 
