@@ -2,6 +2,8 @@
 
 A cross-platform CLI client for [Environment Manager](https://github.com/trainline/environment-manager)
 
+![envmgr example](/example.gif)
+
 ## Install
 ```
 pip install envmgr
