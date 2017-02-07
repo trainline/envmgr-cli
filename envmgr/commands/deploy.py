@@ -29,9 +29,14 @@ class Deploy(BaseCommand):
         else:
             data['mode'] = 'overwrite'
 
-        dry_run = "true" if 'dry-run' in self.opts else "false"
+        is_dry_run = 'dry-run' in self.opts
+        dry_run = "true" if is_dry_run else "false"
         result = self.api.post_deployments(dry_run, data)
-        print(result)
+        
+        if is_dry_run:
+            self.show_result(result, "Deployment dry run was successful")
+        else
+            self.show_result(result, result['id'])
 
     
     def get_deploy_status(self, deploy_id):
