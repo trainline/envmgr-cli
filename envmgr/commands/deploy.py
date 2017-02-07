@@ -35,7 +35,7 @@ class Deploy(BaseCommand):
         
         if is_dry_run:
             self.show_result(result, "Deployment dry run was successful")
-        else
+        else:
             self.show_result(result, result['id'])
 
     

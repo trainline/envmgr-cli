@@ -2,23 +2,27 @@
 envmgr
 
 Usage:
-    envmgr get <service> health in <env> [<slice>] [--json]
-    envmgr get <service> (active|inactive) slice in <env> [--json]
-    envmgr get asg <name> status in <env> [--json]
-    envmgr get deploy status <deploy_id> [--json]
-    envmgr wait-for deploy <deploy_id> [--json]
-    envmgr wait-for asg <name> in <env> [--json]
-    envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> [--json]
-    envmgr publish <file> as <service> <version>
-    envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json]
+    envmgr get <service> health in <env> [<slice>] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get <service> (active|inactive) slice in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get asg <name> status in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get deploy status <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr wait-for deploy <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr wait-for asg <name> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr publish <file> as <service> <version> [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr -h | --help
     envmgr --version
 
 Options:
-    -d --dry-run      Validate a deployment request without actually performing a deployment
-    -j --json         Output the raw json response from Environment Manager
-    -h --help         Show this screen.
-    -v --version      Show version.
+    -d --dry-run                Validate a deployment request without actually performing a deployment.
+    -r --role=<server_role>     Server role for deploying services in multiple roles.
+    -j --json                   Output the raw json response from Environment Manager.
+    -h --host=<host_name>       Environment Manager hostname to override environment variable value.
+    -u --user=<user_name>       Username to override environment variable value.
+    -p --pass=<password>        Password to overide environment variable value.
+    --help                      Show this screen.
+    --version                   Show version.
 
 Examples:
     envmgr get MyService health in prod-1
@@ -44,7 +48,7 @@ from . import __version__ as VERSION
 def except_hook(exec_type, value, trace_back):
     print(value)
 
-sys.excepthook = except_hook
+# sys.excepthook = except_hook
 
 def main():
     """Main CLI entrypoint."""

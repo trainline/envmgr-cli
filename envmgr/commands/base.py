@@ -26,17 +26,28 @@ class BaseCommand(object):
                     self.opts[cli_opt.group(1)] = v
                 else:
                     self.cmds[k] = v
-
-        host = os.environ['ENVMGR_HOST']
-        user = os.environ['ENVMGR_USER']
-        pwrd = os.environ['ENVMGR_PASS']
+        
+        host = self.get_config('host', 'ENVMGR_HOST')
+        user = self.get_config('user', 'ENVMGR_USER')
+        pwrd = self.get_config('pass', 'ENVMGR_PASS')
         self.api = EMApi(server=host, user=user, password=pwrd, retries=1)
 
 
     def run(self):
         raise NotImplementedError('Subclass does not implement run')
 
-    
+
+    def get_config(self, option, env_name):
+        value = None
+        if option in self.opts:
+            value = self.opts[option]
+        else:
+            value = os.getenv(env_name)
+
+        if value is None:
+            raise ValueError("--{0} was not given and no {1} value is set.".format(option, env_name))
+        else:
+            return value
 
 
     def show_result(self, result, message):
