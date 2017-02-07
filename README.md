@@ -3,52 +3,6 @@
 A cross-platform CLI client for [Environment Manager](https://github.com/trainline/environment-manager)
 
 
-## Usage
-
-All `envmgr` actions are exposed behind a set of verbs (_get_ a status, _schedule_ some downtime, _wait_ for an ASG to scale up.)
-
-
-#### Output
-
-By default, `envmgr` commands will output a human friendly response useful for testing single commands at a time. To help scripting or chaining results together, all commands also accept a `--json` argument which will return the raw JSON response from Environment Manager.
-
-## Examples
-
-Publishing a service:
-
-```
-envmgr publish build-022.zip as AwesomeService 1.0.4
-```
-
-Deploying a service:
-
-```
-envmgr deploy AwesomeService 1.0.4 in prod-1
-```
-
-Get the health of a service:
-
-```
-envmgr get AwesomeService health in prod-1
-```
-
-Get service slice information
-
-```
-envmgr get AwesomeService active slice in prod-1
-```
-
-Get ASG status
-
-```
-envmgr get my-asg status in prod-1
-```
-
-# envmgr
-
-A cross-platform CLI client for [Environment Manager](https://github.com/trainline/environment-manager)
-
-
 ## Install
 ```
 pip install envmgr
@@ -137,4 +91,5 @@ Get ASG status
 ```
 envmgr get my-asg status in prod-1
 ```
+
 
