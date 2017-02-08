@@ -11,16 +11,19 @@ Usage:
     envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr publish <file> as <service> <version> [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr patch status <cluster> in <env> [--from_ami=<old_ami>] [--to_ami=<new_ami>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr -h | --help
     envmgr --version
 
 Options:
-    -d --dry-run                Validate a deployment request without actually performing a deployment.
     -r --role=<server_role>     Server role for deploying services in multiple roles.
-    -j --json                   Output the raw json response from Environment Manager.
+    -f --from_ami=<old_ami>     The AMI Name to update from.
+    -t --to_ami=<new_ami>       The AMI Name to update to.
     -h --host=<host_name>       Environment Manager hostname to override environment variable value.
     -u --user=<user_name>       Username to override environment variable value.
     -p --pass=<password>        Password to overide environment variable value.
+    -d --dry-run                Validate a deployment request without actually performing a deployment.
+    -j --json                   Output the raw json response from Environment Manager.
     --help                      Show this screen.
     --version                   Show version.
 
@@ -48,14 +51,14 @@ from . import __version__ as VERSION
 def except_hook(exec_type, value, trace_back):
     print(value)
 
-sys.excepthook = except_hook
+# sys.excepthook = except_hook
 
 def main():
     """Main CLI entrypoint."""
     import envmgr.commands
     
     options = docopt(__doc__, version=VERSION)
-    priority_order = ["asg", "deploy", "get", "publish"]
+    priority_order = ["asg", "deploy", "get", "publish", "patch"]
 
     for cmd in priority_order:
         if options[cmd]:
