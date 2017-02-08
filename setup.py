@@ -11,15 +11,15 @@ with open(join(this_dir, 'README.md'), encoding='utf-8') as file:
     long_description = file.read()
 
 setup(
-    name = 'envmgr',
+    name = 'envmgr-cli',
     version = __version__,
     description = 'Environment Manager CLI tool.',
     long_description = long_description,
-    url = 'https://github.com/trainline/python-environment_manager',
+    url = 'https://github.com/trainline/envmgr-cli',
     author = 'Trainline Platform Development',
     author_email = 'platform.development@thetrainline.com',
     license = 'Apache 2.0',
-    packages = find_packages(exclude=['docs', 'tests*']),
+    packages = find_packages(),
     install_requires = [
         'docopt',
         'requests',
