@@ -2,23 +2,59 @@
 envmgr
 
 Usage:
-    envmgr get <service> health in <env> [<slice>] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr get <service> (active|inactive) slice in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr get asg <name> status in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr get deploy status <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr wait-for deploy <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr wait-for asg <name> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr publish <file> as <service> <version> [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr patch status <cluster> in <env> [--from_ami=<old_ami>] [--to_ami=<new_ami>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get <service> health in <env> 
+        [<slice>] 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr get <service> (active|inactive) slice in <env> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr get asg <name> status in <env> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr get deploy status <deploy_id> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr get <cluster> patch status in <env> 
+        [--from-ami=<old_ami>] 
+        [--to-ami=<new_ami>] 
+        [--dry-run] 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr wait-for deploy <deploy_id> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr wait-for asg <name> in <env> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr publish <file> as <service> <version> 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr deploy <service> <version> in <env> 
+        [<slice>] 
+        [--role=<server_role>] 
+        [--dry-run] 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
     envmgr -h | --help
     envmgr --version
 
 Options:
     -r --role=<server_role>     Server role for deploying services in multiple roles.
-    -f --from_ami=<old_ami>     The AMI Name to update from.
-    -t --to_ami=<new_ami>       The AMI Name to update to.
+    -f --from-ami=<old_ami>     The AMI Name to update from.
+    -t --to-ami=<new_ami>       The AMI Name to update to.
     -h --host=<host_name>       Environment Manager hostname to override environment variable value.
     -u --user=<user_name>       Username to override environment variable value.
     -p --pass=<password>        Password to overide environment variable value.
@@ -58,7 +94,7 @@ def main():
     import envmgr.commands
     
     options = docopt(__doc__, version=VERSION)
-    priority_order = ["asg", "deploy", "get", "publish", "patch"]
+    priority_order = ["asg", "deploy", "patch", "get", "publish"]
 
     for cmd in priority_order:
         if options[cmd]:
