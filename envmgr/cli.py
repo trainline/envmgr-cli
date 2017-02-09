@@ -7,6 +7,7 @@ Usage:
     envmgr get asg <name> status in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr get deploy status <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr wait-for deploy <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr wait-for healthy <service> in <env> [<slice>] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr wait-for asg <name> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr publish <file> as <service> <version> [--host=<host_name>] [--user=<user_name> --pass=<password>]

@@ -1,7 +1,7 @@
-""" Service Commands """
+"""Get Accounts config."""
 
+import os
 import time
-import os 
 
 from json import dumps
 from envmgr.commands.base import BaseCommand
@@ -21,26 +21,19 @@ class GetService(BaseCommand):
     
 
     def wait_for_healthy_service(self, service, env, slice=None):
-        while True:
-            healthy = self.get_service_health(service, slice, env)
-            if healthy:
-                return
-            else:
-                time.sleep(5)
+        print("Wait for {0} in {1} {2}".format(service, env, slice))
 
     def get_overall_health(self, service, env):
         result = self.api.get_service_overall_health(service, env)
         services = [ asg['Services'][0] for asg in result['AutoScalingGroups'] ]
         messages = [ self.format_health(service) for service in services ]
         self.show_result(result, messages)
-        return all( service["OverallHealth"] == "Healthy" for service in services )
-
+        
 
     def get_service_health(self, service, slice, env):        
         result = self.api.get_service_health(service, env, slice)
         message = self.format_health(result)
         self.show_result(result, message)
-        return result["OverallHealth"] == "Healthy"
 
 
     def get_service_slice(self, service, env):
