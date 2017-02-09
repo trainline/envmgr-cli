@@ -56,10 +56,14 @@ def main():
     import envmgr.commands
     
     options = docopt(__doc__, version=VERSION)
-    priority_order = ["asg", "deploy", "toggle", "get", "publish"]
+    priority_order = ["asg", "deploy", "toggle", "publish", "service"]
+    
+    cmd_opts = options.copy()
+    if cmd_opts["<service>"] is not None:
+        cmd_opts["service"] = True
 
     for cmd in priority_order:
-        if options[cmd]:
+        if cmd_opts[cmd]:
             module = getattr(envmgr.commands, cmd)
             envmgr.commands = getmembers(module, isclass)
             command = [command[1] for command in envmgr.commands if command[0] != 'BaseCommand'][0]

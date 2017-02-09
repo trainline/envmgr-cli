@@ -1,5 +1,5 @@
 from .asg import *
-from .get import *
+from .service import *
 from .publish import *
 from .deploy import *
 from .toggle import *
