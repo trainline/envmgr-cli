@@ -67,7 +67,7 @@ envmgr get asg my-asg status in prod-1
 Gets the status of the _my-asg_ ASG in the _prod-1_ environment. Status is calculated as an aggregate of all instances in the ASG.
 
 
-### Get deployment status
+#### Get deployment status
 
 ```
 envmgr get deploy status a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994
@@ -89,6 +89,14 @@ Blocks and waits until the deployment with ID _a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68
 envmgr wait-for asg my-asg in prod-1
 ```
 Blocks and waits until all instances in the ASG _my-asg_ are ready for deployment (In Service).
+
+
+#### Wait until a service is healthy
+
+```
+envmgr wait-for healthy AwesomeService in prod-1
+```
+Blocks and waits until the service _AwesomeService_ is running with all healthchecks passing.
 
 
 #### Schedule ASG state
@@ -114,6 +122,13 @@ envmgr deploy AwesomeService 1.2.9 in prod-1
 ```
 Deploy the published version _1.2.9_ of _AwesomeService_ into the _prod-1_ environment.
 
+
+#### Toggle a service
+
+```
+envmgr toggle AwesomeService in prod-1
+```
+Toggle the upstreams for _AwesomeService_ in the _prod-1_ environment.
 
 
 ## Configuration
