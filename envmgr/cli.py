@@ -11,6 +11,7 @@ Usage:
     envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr publish <file> as <service> <version> [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr toggle <service> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr -h | --help
     envmgr --version
 
@@ -55,7 +56,7 @@ def main():
     import envmgr.commands
     
     options = docopt(__doc__, version=VERSION)
-    priority_order = ["asg", "deploy", "get", "publish"]
+    priority_order = ["asg", "deploy", "toggle", "get", "publish"]
 
     for cmd in priority_order:
         if options[cmd]:
@@ -65,3 +66,5 @@ def main():
             command = command(options)
             command.run()
             return
+
+    print("Unknown command")

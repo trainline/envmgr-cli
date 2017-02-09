@@ -24,7 +24,7 @@ setup(
         'docopt',
         'requests',
         'simplejson',
-        'environment_manager==0.0.8'
+        'environment_manager==0.0.9'
     ],
     entry_points = {
         'console_scripts': [
