@@ -15,8 +15,10 @@ Install
 ::
 
     pip install envmgr-cli
+ 
 
-*See `Configuration`_ for further installinstructions.*
+See `Configuration`_ for further install instructions.
+
 
 Usage
 -----
