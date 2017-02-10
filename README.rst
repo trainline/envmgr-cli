@@ -63,8 +63,8 @@ Manager:
 Examples
 --------
 
-*In the examples below, assume that ``prod-1`` is an environment, ``AwesomeService`` is a
-service and ``my-asg`` is an ASG, all of which are already registered in
+*In the examples below, assume that 'prod-1' is an environment, 'AwesomeService' is a
+service and 'my-asg' is an ASG, all of which are already registered in
 Environment Manager.*
 
 Get service health
