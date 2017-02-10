@@ -8,13 +8,27 @@ class ASG(BaseCommand):
 
     def run(self):
         if self.cmds['schedule']:
-            self.schedule(**self.cli_args)
+            if self.cmds['get']:
+                self.get_schedule(**self.cli_args)
+            else:
+                self.schedule(**self.cli_args)
         elif self.cmds['status']:
             self.get_status(**self.cli_args)
         elif self.cmds['wait-for']:
             self.wait_for(**self.cli_args)
         else:
             print("Unknown ASG command")
+
+
+    def get_schedule(self, env, name):
+        asg = self.api.get_asg(env, name)
+        schedule_tag = [ tag for tag in asg['Tags'] if tag['Key'] == 'Schedule' ]
+        
+        if not schedule_tag:
+            self.show_result({}, "No ASG schedule set")
+        else:
+            schedule = schedule_tag[0]
+            self.show_result(schedule, "Schedule for {0} in {1} is {2}".format(name, env, schedule['Value']))
 
 
     def schedule(self, env, name):        

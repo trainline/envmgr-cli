@@ -7,7 +7,7 @@ from envmgr import __version__
 
 this_dir = abspath(dirname(__file__))
 
-with open(join(this_dir, 'README.md'), encoding='utf-8') as file:
+with open(join(this_dir, 'README.rst'), encoding='utf-8') as file:
     long_description = file.read()
 
 setup(
@@ -24,7 +24,7 @@ setup(
         'docopt',
         'requests',
         'simplejson',
-        'environment_manager==0.0.8'
+        'environment_manager==0.0.9'
     ],
     entry_points = {
         'console_scripts': [

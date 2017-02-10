@@ -2,52 +2,19 @@
 envmgr
 
 Usage:
-    envmgr get <service> health in <env> 
-        [<slice>] 
-        [--json] 
-        [--host=<host_name>] 
-        [--user=<user_name> --pass=<password>]
-    envmgr get <service> (active|inactive) slice in <env> 
-        [--json] 
-        [--host=<host_name>] 
-        [--user=<user_name> --pass=<password>]
-    envmgr get asg <name> status in <env> 
-        [--json] 
-        [--host=<host_name>] 
-        [--user=<user_name> --pass=<password>]
-    envmgr get deploy status <deploy_id> 
-        [--json] 
-        [--host=<host_name>] 
-        [--user=<user_name> --pass=<password>]
-    envmgr get <cluster> patch status in <env> 
-        [--from-ami=<old_ami>] 
-        [--to-ami=<new_ami>] 
-        [--dry-run] 
-        [--json] 
-        [--host=<host_name>] 
-        [--user=<user_name> --pass=<password>]
-    envmgr wait-for deploy <deploy_id> 
-        [--json] 
-        [--host=<host_name>] 
-        [--user=<user_name> --pass=<password>]
-    envmgr wait-for asg <name> in <env> 
-        [--json] 
-        [--host=<host_name>] 
-        [--user=<user_name> --pass=<password>]
-    envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> 
-        [--json] 
-        [--host=<host_name>] 
-        [--user=<user_name> --pass=<password>]
-    envmgr publish <file> as <service> <version> 
-        [--host=<host_name>] 
-        [--user=<user_name> --pass=<password>]
-    envmgr deploy <service> <version> in <env> 
-        [<slice>] 
-        [--role=<server_role>] 
-        [--dry-run] 
-        [--json] 
-        [--host=<host_name>] 
-        [--user=<user_name> --pass=<password>]
+    envmgr get <service> health in <env> [<slice>] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get <service> (active|inactive) slice in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get asg <name> status in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get asg <name> schedule in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get deploy status <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get <cluster> patch status in <env> [--from-ami=<old_ami>] [--to-ami=<new_ami>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr wait-for deploy <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr wait-for healthy <service> in <env> [<slice>] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr wait-for asg <name> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr publish <file> as <service> <version> [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr toggle <service> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr -h | --help
     envmgr --version
 
@@ -94,13 +61,19 @@ def main():
     import envmgr.commands
     
     options = docopt(__doc__, version=VERSION)
-    priority_order = ["asg", "deploy", "patch", "get", "publish"]
+    priority_order = ["asg", "deploy", "patch", "toggle", "publish", "service"]
+    
+    cmd_opts = options.copy()
+    if cmd_opts["<service>"] is not None:
+        cmd_opts["service"] = True
 
     for cmd in priority_order:
-        if options[cmd]:
+        if cmd_opts[cmd]:
             module = getattr(envmgr.commands, cmd)
             envmgr.commands = getmembers(module, isclass)
             command = [command[1] for command in envmgr.commands if command[0] != 'BaseCommand'][0]
             command = command(options)
             command.run()
             return
+
+    print("Unknown command")
