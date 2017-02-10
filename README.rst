@@ -4,10 +4,9 @@ envmgr
 A cross-platform CLI client for `Environment
 Manager <https://github.com/trainline/environment-manager>`__
 
-.. figure:: /example.gif
+.. figure:: https://github.com/trainline/envmgr-cli/raw/master/example.gif
    :alt: envmgr example
 
-   envmgr example
 
 Install
 -------
