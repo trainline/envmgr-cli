@@ -1,4 +1,4 @@
-"""Publish a service package to S3"""
+"""Deploy a service"""
 
 import time
 
@@ -15,36 +15,36 @@ class Deploy(BaseCommand):
         else:
             self.deploy_service(**self.cli_args)
 
-
-    def deploy_service(self, service, version, env, slice=None):        
+    def deploy_service(self, service, version, env, slice=None):
         data = {
-                'environment': env,
-                'service': service,
-                'version': version,
-                }
-        
+            'environment': env,
+            'service': service,
+            'version': version,
+        }
+
         if slice is not None:
             data['slice'] = slice
             data['mode'] = 'bg'
         else:
             data['mode'] = 'overwrite'
 
-        is_dry_run = 'dry-run' in self.opts
-        dry_run = "true" if is_dry_run else "false"
+        if self.opts['dry-run']:
+            dry_run = 'true'
+        else:
+            dry_run = 'false'
+
         result = self.api.post_deployments(dry_run, data)
-        
-        if is_dry_run:
+
+        if dry_run == 'true':
             self.show_result(result, "Deployment dry run was successful")
         else:
             self.show_result(result, result['id'])
 
-    
     def get_deploy_status(self, deploy_id):
         result = self.api.get_deployment(deploy_id)
         self.show_result(result, "Deployment: {0}".format(result['Value']['Status']))
         return result
 
-    
     def wait_for_deployment(self, deploy_id):
         while True:
             result = self.get_deploy_status(deploy_id)
