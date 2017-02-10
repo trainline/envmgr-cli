@@ -5,6 +5,7 @@ Usage:
     envmgr get <service> health in <env> [<slice>] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr get <service> (active|inactive) slice in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr get asg <name> status in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get asg <name> schedule in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr get deploy status <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr wait-for deploy <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr wait-for healthy <service> in <env> [<slice>] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]

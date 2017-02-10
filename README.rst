@@ -97,6 +97,15 @@ Get ASG status
 Gets the status of the *my-asg* ASG in the *prod-1* environment. Status
 is calculated as an aggregate of all instances in the ASG.
 
+Get ASG schedule
+^^^^^^^^^^^^^^
+
+::
+
+    envmgr get asg my-asg schedule in prod-1
+
+Gets the schedule value set on the  *my-asg* ASG in the *prod-1* environment. Note this will tell you what the schedule is configured to - not the current state according to the schedule.
+
 Get deployment status
 ^^^^^^^^^^^^^^^^^^^^^
 
