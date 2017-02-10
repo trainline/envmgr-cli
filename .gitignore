@@ -3,4 +3,5 @@ dist
 *.egg-info
 *.pyc
 .cache
-*.swp
+I*.swp
+*.coverage
