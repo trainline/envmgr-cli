@@ -224,3 +224,26 @@ Or provide the hostname with each command:
 ::
 
     envmgr get MyService health in prod --host=environmentmanager.acme.com
+
+
+Development
+-----------
+Install development dependencies:
+
+::
+
+    pip install -e .
+
+
+Run Tests
+^^^^^^^^^^
+Run all tests:
+
+::
+
+    pytest -v
+
+
+
+
+

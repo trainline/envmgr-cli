@@ -6,7 +6,7 @@ import os
 from json import dumps
 from envmgr.commands.base import BaseCommand
 
-class GetService(BaseCommand):
+class Service(BaseCommand):
 
     def run(self):
         if self.cmds['healthy']:
@@ -18,7 +18,6 @@ class GetService(BaseCommand):
                 self.get_overall_health(**self.cli_args)
         elif self.cmds['slice']:
             self.get_service_slice(**self.cli_args)
-    
 
     def wait_for_healthy_service(self, service, env, slice=None):
         while True:
@@ -35,13 +34,11 @@ class GetService(BaseCommand):
         self.show_result(result, messages)
         return all( service["OverallHealth"] == "Healthy" for service in services )
 
-
     def get_service_health(self, service, slice, env):        
         result = self.api.get_service_health(service, env, slice)
         message = self.format_health(result)
         self.show_result(result, message)
         return result["OverallHealth"] == "Healthy"
-
 
     def get_service_slice(self, service, env):
         active = "true" if self.cmds['active'] else "false"
@@ -49,14 +46,12 @@ class GetService(BaseCommand):
         messages = [ self.format_slice(slice) for slice in result ]
         self.show_result(result, messages)
 
-
     def format_health(self, service):
         slice = service['Slice']
         status = service['OverallHealth']
         n_healthy = service['InstancesCount']['Healthy']
         n_total = service['InstancesCount']['Total']
         return "{0} is {1} ({2} of {3} instances Healthy)".format(slice, status, n_healthy, n_total)
-
 
     def format_slice(self, slice):
         name = slice['Name']

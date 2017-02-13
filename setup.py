@@ -1,33 +1,13 @@
 """ Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information. """
 
-from setuptools import Command, find_packages, setup
+from setuptools import find_packages, setup
 from codecs import open
 from os.path import abspath, dirname, join
-from subprocess import call
-
 from envmgr import __version__
 
 this_dir = abspath(dirname(__file__))
 with open(join(this_dir, 'README.rst'), encoding='utf-8') as file:
     long_description = file.read()
-
-
-class RunTests(Command):
-
-    description = 'run tests'
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        print('is it running')
-        errno = call(['py.test', '--cov=envmgr', '--cov-report=term-missing'])
-        #raise SystemExit(errno)
-
 
 setup(
     name = 'envmgr-cli',
@@ -46,13 +26,12 @@ setup(
         'environment_manager==0.0.9'
     ],
     extras_require = {
-        'test': ['coverage', 'pytest', 'pytest-cov']
+        'test': ['pytest', 'mock']
     },
     entry_points = {
         'console_scripts': [
             'envmgr=envmgr.cli:main',
         ],
     },
-    cmdclass = {'test':RunTests},
 )
 

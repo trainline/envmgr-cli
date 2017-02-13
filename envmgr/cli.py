@@ -50,6 +50,17 @@ import sys
 from inspect import getmembers, isclass
 from docopt import docopt
 from . import __version__ as VERSION
+from envmgr.commands import ASG, Deploy, Patch, Publish, Service, Toggle
+
+commands = {
+    'asg':ASG,
+    'deploy':Deploy,
+    'patch':Patch,
+    'publish':Publish,
+    'service':Service,
+    'toggle':Toggle
+}
+
 
 def except_hook(exec_type, value, trace_back):
     print(value)
@@ -58,21 +69,17 @@ def except_hook(exec_type, value, trace_back):
 
 def main():
     """Main CLI entrypoint."""
-    import envmgr.commands
-    
     options = docopt(__doc__, version=VERSION)
     priority_order = ["asg", "deploy", "patch", "toggle", "publish", "service"]
-    
     cmd_opts = options.copy()
+    
     if cmd_opts["<service>"] is not None:
         cmd_opts["service"] = True
 
     for cmd in priority_order:
         if cmd_opts[cmd]:
-            module = getattr(envmgr.commands, cmd)
-            envmgr.commands = getmembers(module, isclass)
-            command = [command[1] for command in envmgr.commands if command[0] != 'BaseCommand'][0]
-            command = command(options)
+            CommandClass = commands[cmd]
+            command = CommandClass(options)
             command.run()
             return
 
