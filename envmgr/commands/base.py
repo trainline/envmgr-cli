@@ -1,4 +1,4 @@
-"""The base command for handling command CLI / API logic"""
+# Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 import os
 import re
@@ -32,10 +32,8 @@ class BaseCommand(object):
         pwrd = self.get_config('pass', 'ENVMGR_PASS')
         self.api = EMApi(server=host, user=user, password=pwrd, retries=1)
 
-
     def run(self):
         raise NotImplementedError('Subclass does not implement run')
-
 
     def get_config(self, option, env_name):
         value = None
@@ -48,7 +46,6 @@ class BaseCommand(object):
             raise ValueError("--{0} was not given and no {1} value is set.".format(option, env_name))
         else:
             return value
-
 
     def show_result(self, result, message):
         if self.opts['json']:

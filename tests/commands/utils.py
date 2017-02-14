@@ -26,7 +26,6 @@ def mock_server(cluster, ami_name, is_latest_stable, current=1, desired=1):
     }
     return server
 
-
 def rand_str(length=8):
     return ''.join(random.choice(string.ascii_letters) for x in range(length))
 

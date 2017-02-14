@@ -1,4 +1,4 @@
-"""ASG commands"""
+# Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 import time
 
@@ -30,7 +30,6 @@ class ASG(BaseCommand):
             schedule = schedule_tag[0]
             self.show_result(schedule, "Schedule for {0} in {1} is {2}".format(name, env, schedule['Value']))
 
-
     def schedule(self, env, name):        
         data = {'propagateToInstances':True}
 
@@ -52,7 +51,6 @@ class ASG(BaseCommand):
         
         self.show_result(result, "Scheduled {0} {1} in {2} to: {3}".format(n, i, name, s))
 
-
     def get_status(self, env, name):
         result = self.api.get_asg_ready(env, name)
         is_ready = result["ReadyToDeploy"]
@@ -66,7 +64,6 @@ class ASG(BaseCommand):
             self.show_result(result, "{0} is not ready for deployment (instances: {1}, Total={2})".format(name, ", ".join(states), n_total))
 
         return is_ready 
-
 
     def wait_for(self, env, name):
         while True:

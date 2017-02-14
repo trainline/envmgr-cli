@@ -1,4 +1,4 @@
-"""Publish a service package to S3"""
+# Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 import os
 import requests
@@ -11,7 +11,6 @@ class Publish(BaseCommand):
 
     def run(self):
         self.publish_service_file(**self.cli_args)
-
 
     def publish_service_file(self, service, version, file):
         file_path = os.path.abspath(file)
@@ -30,7 +29,6 @@ class Publish(BaseCommand):
                 print("{0} v{1} published ({2})".format(service,version,file_size))
             else:
                 print("Error")
-            
 
     def convert_size(self, size_bytes):
         if (size_bytes == 0):

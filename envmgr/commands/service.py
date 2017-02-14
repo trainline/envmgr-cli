@@ -1,4 +1,4 @@
-""" Service Commands """
+# Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 import time
 import os 
@@ -58,3 +58,4 @@ class Service(BaseCommand):
         status = slice['State']
         upstream = slice['UpstreamName']
         return "{0} is {1} ({2})".format(name, status, upstream)
+

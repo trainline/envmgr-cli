@@ -30,7 +30,6 @@ class PatchTest(APITestCase):
         result = sut.get_patch_requirements(cluster, 'staging')
         self.assertEqual(len(result), len(old_win_servers))
 
-
     def respond_with_servers(self, servers):
         server_response = {
             'EnvironmentName': 'staging',
@@ -38,11 +37,9 @@ class PatchTest(APITestCase):
         }
         self.mock_response(r'/environments/[\w\.\-]+/servers', server_response)
 
-
     def setup_responses(self):
         self.mock_authentication()
         self.mock_response_with_file(r'/images', 'ami_response.json')
-
 
     def create_servers(self, cluster, n=1, ami='mock-ami-1.0.0', is_latest_stable=False):
         servers = [ mock_server(cluster, ami, is_latest_stable) for x in range(n) ]

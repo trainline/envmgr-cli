@@ -1,4 +1,4 @@
-"""Patch commands"""
+# Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 import time
 
@@ -8,7 +8,6 @@ class Patch(BaseCommand):
 
     def run(self):
         self.get_patch_status(**self.cli_args)
-
     
     def get_patch_status(self, cluster, env):
         from_ami = self.opts.get("from-ami")
@@ -21,11 +20,10 @@ class Patch(BaseCommand):
         self.show_result(result,
                 "{0} need to patch {1} {2} {3} in {4}".format(cluster, n_windows, server_desc, pluralized, env))
 
-
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None):
         if env == "pr1" or env == "PR1":
             print("Yeah, let's not do that huh?")
-            return
+            return []
 
         cluster = cluster.lower()
         from_ami = self.opts.get("from-ami")
@@ -60,5 +58,4 @@ class Patch(BaseCommand):
         ]
 
         return servers_to_update
-
 
