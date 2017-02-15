@@ -9,7 +9,7 @@ Usage:
     envmgr get asg <name> status in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr get asg <name> schedule in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr get deploy status <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr get <cluster> patch status in <env> [--from-ami=<old_ami>] [--to-ami=<new_ami>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get <cluster> patch status in <env> [--from-ami=<old_ami> --to-ami=<new_ami>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr wait-for deploy <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr wait-for healthy <service> in <env> [<slice>] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr wait-for asg <name> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]

@@ -15,9 +15,11 @@ class PatchTest(APITestCase):
 
     @parameterized.expand( TEST_SCENARIOS )
     @responses.activate
-    def test_identify_non_latest_stable(self, *args, **kwargs):
+    def test_get_patch_requirements(self, *args, **kwargs):
         patch_cluster = kwargs.get('patch_cluster')
         expected_result = kwargs.get('expected')
+        from_ami = kwargs.get('from_ami')
+
         servers_in_env = []
 
         # Create a list of servers in env, based on test scenario
@@ -27,8 +29,12 @@ class PatchTest(APITestCase):
         self.setup_responses()
         self.respond_with_servers(servers_in_env)
 
-        sut = Patch({})        
-        result = sut.get_patch_requirements(patch_cluster, 'staging')
+        sut = Patch({})
+        result = sut.get_patch_requirements( **{
+            'cluster':patch_cluster,
+            'env':'staging',
+            'from_ami':from_ami 
+        })
         self.assertEqual(len(result), expected_result)
     
 

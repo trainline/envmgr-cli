@@ -75,5 +75,37 @@ TEST_SCENARIOS=[
         patch_cluster='A-team',
         expected=0
     ),
+    param( # 2 different versions of old Windows, patch from_ami specified
+        {'n':81, 'ami':LATEST_STABLE_WINDOWS_SECURE, 'latest':True, 'cluster':'A-team'}, 
+        {'n':30, 'ami':WINDOWS_SECURE_7_0_0, 'latest':False, 'cluster':'A-team'}, 
+        {'n':46, 'ami':WINDOWS_SECURE_5_5_3, 'latest':False, 'cluster':'A-team'}, 
+        {'n':27, 'ami':LATEST_STABLE_UBUNTU, 'latest':True, 'cluster':'A-team'}, 
+        patch_cluster='A-team',
+        from_ami=WINDOWS_SECURE_5_5_3,
+        expected=46
+    ), 
+    param( # 2 different versions of old Windows, patch from_ami specified, multiple clusters
+        {'n':81, 'ami':LATEST_STABLE_WINDOWS_SECURE, 'latest':True, 'cluster':'M-team'}, 
+        {'n':81, 'ami':LATEST_STABLE_WINDOWS_SECURE, 'latest':True, 'cluster':'O-team'}, 
+        {'n':52, 'ami':WINDOWS_SECURE_7_0_0, 'latest':False, 'cluster':'M-team'}, 
+        {'n':26, 'ami':WINDOWS_SECURE_7_0_0, 'latest':False, 'cluster':'N-team'}, 
+        {'n':40, 'ami':WINDOWS_SECURE_7_0_0, 'latest':False, 'cluster':'O-team'}, 
+        {'n':20, 'ami':WINDOWS_SECURE_5_5_3, 'latest':False, 'cluster':'M-team'}, 
+        {'n':99, 'ami':WINDOWS_SECURE_5_5_3, 'latest':False, 'cluster':'N-team'}, 
+        {'n':4, 'ami':WINDOWS_SECURE_5_5_3, 'latest':False, 'cluster':'0-team'}, 
+        {'n':17, 'ami':LATEST_STABLE_UBUNTU, 'latest':True, 'cluster':'N-team'}, 
+        {'n':17, 'ami':LATEST_STABLE_UBUNTU, 'latest':True, 'cluster':'O-team'}, 
+        patch_cluster='O-team',
+        from_ami=WINDOWS_SECURE_7_0_0,
+        expected=40
+    ), 
+    param( # Patch from_ami version not present
+        {'n':10, 'ami':LATEST_STABLE_WINDOWS_SECURE, 'latest':True, 'cluster':'A-team'}, 
+        {'n':11, 'ami':WINDOWS_SECURE_7_0_0, 'latest':False, 'cluster':'A-team'}, 
+        {'n':7, 'ami':LATEST_STABLE_UBUNTU, 'latest':True, 'cluster':'A-team'}, 
+        patch_cluster='A-team',
+        from_ami=WINDOWS_SECURE_5_5_3,
+        expected=0
+    ), 
 ]
 
