@@ -5,68 +5,30 @@ import sys
 from unittest import TestCase
 from mock import patch
 from envmgr.cli import main
+from nose_parameterized import parameterized
 
 class TestCLI(TestCase):
 
-    @patch('envmgr.cli.Service.run')
-    def test_get_service_health(self, run):
-        self.assert_command('get MockService health in mk-1', run)
-
-    @patch('envmgr.cli.Service.run')
-    def test_get_service_health_with_slice(self, run):
-        self.assert_command('get AcmeService health in mk-2 green', run)
-    
-    @patch('envmgr.cli.Service.run')
-    def test_get_service_active_slice(self, run):
-        self.assert_command('get CoolService active slice in mk-22', run)
-
-    @patch('envmgr.cli.Service.run')
-    def test_get_service_inactive_slice(self, run):
-        self.assert_command('get CoolService inactive slice in mk-22', run)
-    
-    @patch('envmgr.cli.Service.run')
-    def test_wait_for_healthy_service(self, run):
-        self.assert_command('wait-for healthy CoolService in mk-22', run)
-    
-    @patch('envmgr.cli.ASG.run')
-    def test_get_asg_status(self, run):
-        self.assert_command('get asg mk-auto-scale status in mk-22', run)
-    
-    @patch('envmgr.cli.ASG.run')
-    def test_get_asg_schedule(self, run):
-        self.assert_command('get asg mk-auto-scale schedule in mk-22', run)
-    
-    @patch('envmgr.cli.ASG.run')
-    def test_wait_for_asg(self, run):
-        self.assert_command('wait-for asg mk-auto-scale in mk-22', run)
-    
-    @patch('envmgr.cli.ASG.run')
-    def test_schedule_asg(self, run):
-        self.assert_command('schedule asg mk-auto-scale on in mk-22', run)
-    
-    @patch('envmgr.cli.Deploy.run')
-    def test_deploy_service(self, run):
-        self.assert_command('deploy MyService 1.4.0 in prod-1', run)
-    
-    @patch('envmgr.cli.Deploy.run')
-    def test_get_deploy_status(self, run):
-        self.assert_command('get deploy status a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994', run)
-    
-    @patch('envmgr.cli.Deploy.run')
-    def test_wait_for_deploy(self, run):
-        self.assert_command('wait-for deploy a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994', run)
-    
-    @patch('envmgr.cli.Publish.run')
-    def test_publish_service(self, run):
-        self.assert_command('publish build-22.zip as AcmeService 1.2.3', run)
-    
-    @patch('envmgr.cli.Toggle.run')
-    def test_toggle_service(self, run):
-        self.assert_command('toggle MyService in mock-3', run)
-    
-    @patch('envmgr.cli.Patch.run')
-    def test_get_patch_status(self, run):
-        self.assert_command('get team-1 patch status in prod', run)
+    @parameterized.expand([
+        ('get MockService health in prod',                          'envmgr.cli.Service.run'),
+        ('get AcmeService health in prod green',                    'envmgr.cli.Service.run'),
+        ('get CoolService active slice in dev',                     'envmgr.cli.Service.run'),
+        ('get CoolService inactive slice in staging',               'envmgr.cli.Service.run'),
+        ('wait-for healthy CoolService in prod',                    'envmgr.cli.Service.run'),
+        ('get asg mock-asg status in prod',                         'envmgr.cli.ASG.run'),
+        ('get asg mock-asg schedule in staging',                    'envmgr.cli.ASG.run'),
+        ('wait-for asg mock-asg in prod',                           'envmgr.cli.ASG.run'),
+        ('schedule asg mock-asg off in staging',                    'envmgr.cli.ASG.run'),
+        ('deploy MyService 1.4.0 in prod',                          'envmgr.cli.Deploy.run'),
+        ('get deploy status a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994',  'envmgr.cli.Deploy.run'),
+        ('wait-for deploy a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994',    'envmgr.cli.Deploy.run'),
+        ('publish build-22.zip as AcmeService 1.2.3',               'envmgr.cli.Publish.run'),
+        ('toggle MyService in staging',                             'envmgr.cli.Toggle.run'),
+        ('get A-team patch status in prod',                         'envmgr.cli.Patch.run'),
+    ])
+    def test_command(self, cmd, expected_call):
+        with patch(expected_call) as run:
+            self.assert_command(cmd, run)
 
     def assert_command(self, cmd, func):
         argv = ['/usr/local/bin/envmgr'] + cmd.split(' ')

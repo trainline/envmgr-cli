@@ -1,7 +1,5 @@
 # Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
-""" Patch Tests """
-
 import responses
 import random
 import string
@@ -16,6 +14,7 @@ class PatchTest(APITestCase):
 
     LATEST_STABLE_WINDOWS_APP = 'windows-2012r2-app-7.3.2'
     LATEST_STABLE_WINDOWS_SECURE = 'windows-2012r2-secureapp-7.3.0'
+    LATEST_STABLE_UBUNTU = 'ubuntu-16.04-0.2.7'
 
     @parameterized.expand([
         ('5 Old Win', 5, 0, 0),
@@ -30,16 +29,16 @@ class PatchTest(APITestCase):
         ('No Servers', 0, 0, 0)
     ])
     @responses.activate
-    def test_identify_non_latest_stable(self, _, n_old_win, n_latest_win, n_other):
+    def test_identify_non_latest_stable(self, _, n_old_win, n_latest_win, n_linux):
         cluster = 'acmeteam'
-        rnd_servers = self.create_servers(cluster, n_other)
+        linux_servers = self.create_servers(cluster, n_linux, self.LATEST_STABLE_UBUNTU)
         win_servers = self.create_servers(cluster, n_latest_win, self.LATEST_STABLE_WINDOWS_APP, True)
         old_win_servers = self.create_servers(cluster, n_old_win, 'windows-2012r2-secureapp-7.0.0', False)
     
         self.setup_responses()
-        self.respond_with_servers(rnd_servers + old_win_servers + win_servers)
-        
+        self.respond_with_servers(linux_servers + old_win_servers + win_servers)
         sut = Patch({})        
+        
         result = sut.get_patch_requirements(cluster, 'staging')
         self.assertEqual(len(result), len(old_win_servers))
 
