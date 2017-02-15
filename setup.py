@@ -26,7 +26,7 @@ setup(
         'environment_manager==0.0.9'
     ],
     extras_require = {
-        'test': ['pytest', 'mock']
+        'test': ['pytest', 'mock', 'nose', 'nose-parameterized', 'responses']
     },
     entry_points = {
         'console_scripts': [

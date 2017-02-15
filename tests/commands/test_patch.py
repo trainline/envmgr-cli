@@ -8,20 +8,33 @@ import string
 
 from unittest import TestCase
 from envmgr.commands import Patch
+from nose_parameterized import parameterized
 from .apitestcase import APITestCase
 from .utils import mock_server
 
 class PatchTest(APITestCase):
 
     LATEST_STABLE_WINDOWS_APP = 'windows-2012r2-app-7.3.2'
-    LATEST_STABLE_WINDOWS_SECURE = 'windows-2012r2-secureapp-7.3.0';
+    LATEST_STABLE_WINDOWS_SECURE = 'windows-2012r2-secureapp-7.3.0'
 
+    @parameterized.expand([
+        ('5 Old Win', 5, 0, 0),
+        ('3 Old Win, 7 Linux', 3, 0, 7),
+        ('9 Old Win, 10 Latest Win, 6 Linux', 9, 10, 6),
+        ('4 Old Win, 2 Latest Win', 4, 2, 0),
+        ('3 Latest Win, 2 Linux', 0, 3, 2),
+        ('15 Latest Win', 0, 3, 0),
+        ('20 Linux', 0, 0, 22),
+        ('400 Old Windows', 400, 0, 0),
+        ('276 Old Win, 598 Latest Win, 1238 Linux', 276, 598, 1238),
+        ('No Servers', 0, 0, 0)
+    ])
     @responses.activate
-    def test_get_patch_requirements(self):
+    def test_identify_non_latest_stable(self, _, n_old_win, n_latest_win, n_other):
         cluster = 'acmeteam'
-        rnd_servers = self.create_servers(cluster, 10)
-        win_servers = self.create_servers(cluster, 2, self.LATEST_STABLE_WINDOWS_APP, True)
-        old_win_servers = self.create_servers(cluster, 2, 'windows-2012r2-secureapp-7.0.0', False)
+        rnd_servers = self.create_servers(cluster, n_other)
+        win_servers = self.create_servers(cluster, n_latest_win, self.LATEST_STABLE_WINDOWS_APP, True)
+        old_win_servers = self.create_servers(cluster, n_old_win, 'windows-2012r2-secureapp-7.0.0', False)
     
         self.setup_responses()
         self.respond_with_servers(rnd_servers + old_win_servers + win_servers)
