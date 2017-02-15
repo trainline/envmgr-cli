@@ -30,7 +30,7 @@ class APITestCase(TestCase):
     def load_json_data(self, file_name):
         this_dir = abspath(dirname(__file__))
         
-        with open(join(this_dir, '../data/', file_name), encoding='utf-8') as file_data:
+        with open(join(this_dir, '../../data/', file_name), encoding='utf-8') as file_data:
             json_data = json.load(file_data)
         
         return json_data

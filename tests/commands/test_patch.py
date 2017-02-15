@@ -7,9 +7,9 @@ import string
 from unittest import TestCase
 from envmgr.commands import Patch
 from nose_parameterized import parameterized, param
-from .apitestcase import APITestCase
-from .utils import mock_server
-from .patch_scenarios import TEST_SCENARIOS
+from .helpers.api_test_case import APITestCase
+from .helpers.utils import mock_server
+from .helpers.patch_scenarios import TEST_SCENARIOS
 
 class PatchTest(APITestCase):
 
