@@ -6,41 +6,31 @@ import string
 
 from unittest import TestCase
 from envmgr.commands import Patch
-from nose_parameterized import parameterized
+from nose_parameterized import parameterized, param
 from .apitestcase import APITestCase
 from .utils import mock_server
+from .patch_scenarios import TEST_SCENARIOS
 
 class PatchTest(APITestCase):
 
-    LATEST_STABLE_WINDOWS_APP = 'windows-2012r2-app-7.3.2'
-    LATEST_STABLE_WINDOWS_SECURE = 'windows-2012r2-secureapp-7.3.0'
-    LATEST_STABLE_UBUNTU = 'ubuntu-16.04-0.2.7'
-
-    @parameterized.expand([
-        ('5 Old Win', 5, 0, 0),
-        ('3 Old Win, 7 Linux', 3, 0, 7),
-        ('9 Old Win, 10 Latest Win, 6 Linux', 9, 10, 6),
-        ('4 Old Win, 2 Latest Win', 4, 2, 0),
-        ('3 Latest Win, 2 Linux', 0, 3, 2),
-        ('15 Latest Win', 0, 3, 0),
-        ('20 Linux', 0, 0, 22),
-        ('400 Old Windows', 400, 0, 0),
-        ('276 Old Win, 598 Latest Win, 1238 Linux', 276, 598, 1238),
-        ('No Servers', 0, 0, 0)
-    ])
+    @parameterized.expand( TEST_SCENARIOS )
     @responses.activate
-    def test_identify_non_latest_stable(self, _, n_old_win, n_latest_win, n_linux):
-        cluster = 'acmeteam'
-        linux_servers = self.create_servers(cluster, n_linux, self.LATEST_STABLE_UBUNTU)
-        win_servers = self.create_servers(cluster, n_latest_win, self.LATEST_STABLE_WINDOWS_APP, True)
-        old_win_servers = self.create_servers(cluster, n_old_win, 'windows-2012r2-secureapp-7.0.0', False)
-    
+    def test_identify_non_latest_stable(self, *args, **kwargs):
+        patch_cluster = kwargs.get('patch_cluster')
+        expected_result = kwargs.get('expected')
+        servers_in_env = []
+
+        # Create a list of servers in env, based on test scenario
+        for server_desc in args:
+            servers_in_env += self.create_servers(**server_desc)
+
         self.setup_responses()
-        self.respond_with_servers(linux_servers + old_win_servers + win_servers)
+        self.respond_with_servers(servers_in_env)
+
         sut = Patch({})        
-        
-        result = sut.get_patch_requirements(cluster, 'staging')
-        self.assertEqual(len(result), len(old_win_servers))
+        result = sut.get_patch_requirements(patch_cluster, 'staging')
+        self.assertEqual(len(result), expected_result)
+    
 
     def respond_with_servers(self, servers):
         server_response = {
@@ -53,6 +43,6 @@ class PatchTest(APITestCase):
         self.mock_authentication()
         self.mock_response_with_file(r'/images', 'ami_response.json')
 
-    def create_servers(self, cluster, n=1, ami='mock-ami-1.0.0', is_latest_stable=False):
-        servers = [ mock_server(cluster, ami, is_latest_stable) for x in range(n) ]
+    def create_servers(self, cluster, n=1, ami='mock-ami-1.0.0', latest=False):
+        servers = [ mock_server(cluster, ami, latest) for x in range(n) ]
         return servers
