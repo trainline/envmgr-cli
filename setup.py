@@ -23,6 +23,7 @@ setup(
         'docopt',
         'requests',
         'simplejson',
+        'tabulate',
         'environment_manager==0.0.9'
     ],
     extras_require = {

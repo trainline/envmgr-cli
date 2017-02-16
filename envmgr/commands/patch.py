@@ -1,6 +1,7 @@
 # Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 from envmgr.commands.base import BaseCommand
+from tabulate import tabulate
 
 class Patch(BaseCommand):
 
@@ -12,20 +13,20 @@ class Patch(BaseCommand):
         to_ami = self.opts.get('to-ami')
         result = self.get_patch_requirements(cluster, env, from_ami, to_ami)
 
-        n_windows = len(result)
-        server_desc = from_ami if from_ami is not None else 'Windows'
-        pluralized = 'server' if n_windows == 1 else 'servers'
-        self.show_result(result,
-                "{0} need to patch {1} {2} {3} in {4}".format(
-                    cluster, n_windows, server_desc, pluralized, env
-                    )
-                )
+        if not result:
+            self.show_result(result, 'All {0} Windows servers are up to date in {1}'.format(cluster, env))
+        else:
+            messages = ['The following patch operations are required:']
+            table_data = map(lambda p: {
+                'ASG': '{0}'.format(p['server_name']),
+                'Patch': '{0} -> {1}'.format(p['from_ami'], p['to_ami']),
+                }, result)
+
+            messages.append(tabulate(table_data, tablefmt="plain"))
+            self.show_result(result, messages)
+
 
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None):
-        if env == "pr1" or env == "PR1":
-            print("Yeah, let's not do that huh?")
-            return []
-
         servers = self.api.get_environment_servers(env)['Value']
         all_amis = self.api.get_images()
         
@@ -57,55 +58,50 @@ class Patch(BaseCommand):
             )
         ]
 
-        patch_transform = lambda s: {
+        def patch_transform(s):
+            
+            from_name = s['Ami']['Name']
+            target = self.get_target_ami(windows_amis, from_name)
+            to_name = target['Name']
+
+            return {
                 'server_name':s['Name'],
-                'from_ami':s['Ami']['Name'],
+                'from_ami':from_name,
+                'to_ami':to_name,
                 'server_role':s['Role'],
                 'services_count':len(s['Services']),
                 'instances_count':s['Size']['Current']
-        }
+            }
 
         patches = map(patch_transform, servers_to_update)
         return patches
 
+    def get_target_ami(self, amis, from_name):
+        from_ami = self.get_ami_by_key(amis, 'Name', from_name)
+        ami_type = from_ami['AmiType']
+        
+        ami = [ ami for ami in amis if ami['AmiType'] == ami_type and ami['IsLatestStable'] == True]
+        return ami[0]
+
+    def get_ami_by_key(self, amis, key, value, unique=True):
+        ami = [ ami for ami in amis if ami[key] == value ]
+        if not ami:
+            raise ValueError('Could not find AMI with {0}={1}'.format(key, value))
+        elif unique and len(ami) != 1:
+            raise ValueError('Multiple AMI definitions found with {0}={1}'.format(key, value))
+        return ami[0]
 
     def validate_ami_compatibility(self, amis, from_name=None, to_name=None):
-
         from_ami = None
         to_ami = None
 
-        def validate_ami(ami_list, ami_name):
-            if not ami_list:
-                raise ValueError('Could not find AMI info for {0}'.format(ami_name))
-            elif len(ami_list) != 1:
-                raise ValueError('Multiple AMI definitions found for {0}'.format(ami_name))
-
         if from_name is not None:
-            from_ami_list = [ ami for ami in amis if ami['Name'] == from_name ]
-            validate_ami(from_ami_list, from_name)
-            from_ami = from_ami_list[0]
+            from_ami = self.get_ami_by_key(amis, 'Name', from_name)
 
         if to_name is not None:
-            to_ami_list = [ ami for ami in amis if ami['Name'] == to_name ]
-            validate_ami(to_ami_list, to_name)
-            to_ami = to_ami_list[0]
+            to_ami = self.get_ami_by_key(amis, 'Name', to_name)
 
         if from_ami is not None and to_ami is not None:
             if from_ami['AmiType'] != to_ami['AmiType']:
                 raise ValueError('AMI types for from_ami and to_ami must match')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
