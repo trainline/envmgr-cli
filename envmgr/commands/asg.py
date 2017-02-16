@@ -59,7 +59,7 @@ class ASG(BaseCommand):
             self.show_result(result, "{0} is ready for deployments".format(name))
         else:
             n_total = result.get('InstancesTotalCount')
-            states = map(lambda (state,count): "{0}={1}".format(state, count), 
+            states = map(lambda state,count: "{0}={1}".format(state, count), 
                     result.get('InstancesByLifecycleState').iteritems())
             self.show_result(result, "{0} is not ready for deployment (instances: {1}, Total={2})".format(name, ", ".join(states), n_total))
 
