@@ -8,9 +8,9 @@ from envmgr.commands.base import BaseCommand
 class Deploy(BaseCommand):
 
     def run(self):
-        if self.cmds["wait-for"]:
+        if self.cmds.get("wait-for"):
             self.wait_for_deployment(**self.cli_args)
-        elif self.cmds["status"]:
+        elif self.cmds.get("status"):
             self.get_deploy_status(**self.cli_args)
         else:
             self.deploy_service(**self.cli_args)
@@ -28,7 +28,7 @@ class Deploy(BaseCommand):
         else:
             data['mode'] = 'overwrite'
 
-        if self.opts['dry-run']:
+        if self.opts.get('dry-run'):
             dry_run = 'true'
         else:
             dry_run = 'false'
@@ -42,13 +42,13 @@ class Deploy(BaseCommand):
 
     def get_deploy_status(self, deploy_id):
         result = self.api.get_deployment(deploy_id)
-        self.show_result(result, "Deployment: {0}".format(result['Value']['Status']))
+        self.show_result(result, "Deployment: {0}".format(result.get('Value').get('Status')))
         return result
 
     def wait_for_deployment(self, deploy_id):
         while True:
             result = self.get_deploy_status(deploy_id)
-            status = result['Value']['Status']
+            status = result.get('Value').get('Status')
             if status == "Failed" or status == "Success":
                 return
             else:

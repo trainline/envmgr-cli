@@ -48,7 +48,7 @@ class BaseCommand(object):
             return value
 
     def show_result(self, result, message):
-        if self.opts['json']:
+        if self.opts.get('json'):
             print(json.dumps(result))
         elif isinstance(message, list):
             print(os.linesep.join(message))
