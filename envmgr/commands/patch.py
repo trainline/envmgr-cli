@@ -18,8 +18,11 @@ class Patch(BaseCommand):
         else:
             messages = ['The following patch operations are required:']
             table_data = map(lambda p: {
-                'ASG': '{0}'.format(p['server_name']),
-                'Patch': '{0} -> {1}'.format(p['from_ami'], p['to_ami']),
+                0: p['server_name'],
+                1: p['instances_count'],
+                2: p['from_ami'],
+                3: '->',
+                4: p['to_ami']
                 }, result)
 
             messages.append(tabulate(table_data, tablefmt="plain"))
@@ -33,6 +36,7 @@ class Patch(BaseCommand):
         # We're only interested in Windows as Linux instances auto-update
         windows_amis = [ ami for ami in all_amis if ami['Platform'] == 'Windows' ]
 
+        # Validate AMI specs
         self.validate_ami_compatibility(windows_amis, from_ami, to_ami)
 
         # List of clusters' servers with AMI info
@@ -59,11 +63,9 @@ class Patch(BaseCommand):
         ]
 
         def patch_transform(s):
-            
             from_name = s['Ami']['Name']
             target = self.get_target_ami(windows_amis, from_name)
             to_name = target['Name']
-
             return {
                 'server_name':s['Name'],
                 'from_ami':from_name,
