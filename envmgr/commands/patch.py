@@ -28,7 +28,7 @@ class Patch(BaseCommand):
                 2: p.get('from_ami'),
                 3: '->',
                 4: p.get('to_ami'),
-                5: p.get('Warning')
+                5: 'WARNING' if p.get('Warning') is not None else ''
                 }, result)
             messages.append(tabulate(table_data, tablefmt="plain"))
             self.show_result(result, messages)
@@ -83,7 +83,7 @@ class Patch(BaseCommand):
 
         # Warn if target version is older than current verion
         if semver.compare(to_version, from_version) != 1:
-            patch['Warning'] = 'WARNING'
+            patch['Warning'] = 'Target version ({0}) is older than current version ({1})'.format(to_version, from_version)
 
         return patch
 
