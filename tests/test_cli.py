@@ -4,7 +4,7 @@ import sys
 
 from unittest import TestCase
 from mock import patch
-from envmgr.cli import main
+from envmgr.cli import main, except_hook
 from nose_parameterized import parameterized
 
 class TestCLI(TestCase):
@@ -29,6 +29,9 @@ class TestCLI(TestCase):
     def test_command(self, cmd, expected_call):
         with patch(expected_call) as run:
             self.assert_command(cmd, run)
+
+    def test_custom_except_hook(self):
+        self.assertEqual(sys.excepthook, except_hook)
 
     def assert_command(self, cmd, func):
         argv = ['/usr/local/bin/envmgr'] + cmd.split(' ')
