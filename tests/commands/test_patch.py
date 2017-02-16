@@ -35,7 +35,7 @@ class PatchTest(APITestCase):
             'env':'staging',
             'from_ami':from_ami 
         })
-        self.assertEqual(len(result), expected_result)
+        self.assertEqual(len(list(result)), expected_result)
     
 
     def respond_with_servers(self, servers):

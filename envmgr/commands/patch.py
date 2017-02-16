@@ -77,7 +77,7 @@ class Patch(BaseCommand):
             'from_ami': from_name,
             'to_ami': to_name,
             'server_role': server.get('Role'),
-            'services_count': len(server.get('Services')),
+            'services_count': len(list(server.get('Services'))),
             'instances_count': server.get('Size').get('Current')
         }
 
@@ -99,7 +99,7 @@ class Patch(BaseCommand):
         ami = [ ami for ami in self.amis if ami[key] == value ]
         if not ami:
             raise ValueError('Could not find AMI with {0}={1}'.format(key, value))
-        elif unique and len(ami) != 1:
+        elif unique and len(list(ami)) != 1:
             raise ValueError('Multiple AMI definitions found with {0}={1}'.format(key, value))
         return ami[0]
 

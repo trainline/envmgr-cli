@@ -45,7 +45,7 @@ class ASG(BaseCommand):
         params = {'environment':env, 'asgname':name, 'data':data}
         result = self.api.put_asg_scaling_schedule(**params)
 
-        n = len(result.get('ChangedInstances'))
+        n = len(list(result.get('ChangedInstances')))
         i = 'instance' if n == 1 else 'instances'
         s = 'default' if self.cmds.get('default') else data.get('schedule')
         
