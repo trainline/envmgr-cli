@@ -25,6 +25,7 @@ setup(
         'simplejson',
         'tabulate',
         'repoze.lru',
+        'semver',
         'environment_manager==0.0.9'
     ],
     extras_require = {
