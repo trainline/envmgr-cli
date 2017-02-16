@@ -2,6 +2,16 @@
 
 import random
 import string
+import json
+
+from codecs import open
+from os.path import abspath, dirname, join
+
+def load_json_data(file_name):
+    this_dir = abspath(dirname(__file__))
+    with open(join(this_dir, '../../data/', file_name), encoding='utf-8') as file_data:
+        json_data = json.load(file_data)
+    return json_data
 
 def mock_server(cluster, ami_name, is_latest_stable, current=1, desired=1):
     rnd = rand_str()

@@ -7,9 +7,8 @@ import re
 import responses
 import json
 
-from codecs import open
-from os.path import abspath, dirname, join
 from unittest import TestCase
+from .utils import load_json_data
 
 class APITestCase(TestCase):
 
@@ -17,7 +16,7 @@ class APITestCase(TestCase):
         super(APITestCase, self).__init__(*args, **kwargs)
 
     def mock_response_with_file(self, path_match, file_name):
-        response = self.load_json_data(file_name)
+        response = load_json_data(file_name)
         self.mock_response(path_match, response)
 
     def mock_response(self, path_match, response):
@@ -26,14 +25,6 @@ class APITestCase(TestCase):
         
         responses.add(responses.GET, url_match, match_querystring=True,
                 body=response_data, status=200, content_type='application/json')
-
-    def load_json_data(self, file_name):
-        this_dir = abspath(dirname(__file__))
-        
-        with open(join(this_dir, '../../data/', file_name), encoding='utf-8') as file_data:
-            json_data = json.load(file_data)
-        
-        return json_data
 
     def mock_authentication(self):
         token_url = re.compile(r'https?://[\w\.]+/api/token')
