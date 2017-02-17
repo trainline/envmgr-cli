@@ -9,9 +9,9 @@ class ASG(BaseCommand):
     def run(self):
         if self.cmds.get('schedule'):
             if self.cmds.get('get'):
-                self.get_schedule(**self.cli_args)
+                self.describe_schedule(**self.cli_args)
             else:
-                self.schedule(**self.cli_args)
+                self.update_schedule(**self.cli_args)
         elif self.cmds.get('status'):
             self.get_status(**self.cli_args)
         elif self.cmds.get('wait-for'):
@@ -19,37 +19,43 @@ class ASG(BaseCommand):
         else:
             print("Unknown ASG command")
 
+    def describe_schedule(self, env, name):
+        result = self.get_schedule(env, name)
+        if not result:
+            self.show_result({}, "No ASG schedule set")
+        else:
+            self.show_result(result, "Schedule for {0} in {1} is {2}".format(name, env, result.get('Value')))
 
     def get_schedule(self, env, name):
         asg = self.api.get_asg(env, name)
-        schedule_tag = [ tag for tag in asg.get('Tags') if tag.get('Key') == 'Schedule' ]
-        
-        if not schedule_tag:
-            self.show_result({}, "No ASG schedule set")
-        else:
-            schedule = schedule_tag[0]
-            self.show_result(schedule, "Schedule for {0} in {1} is {2}".format(name, env, schedule.get('Value')))
+        tags = asg.get('Tags')
+        if tags is not None:
+            schedule_tag = [ tag for tag in tags if tag.get('Key') == 'Schedule' ]
+            if (len(schedule_tag) > 0):
+                return schedule_tag[0]
+        return {}
 
-    def schedule(self, env, name):        
-        data = {'propagateToInstances':True}
-
+    def update_schedule(self, env, name):
+        schedule = ''
         if self.cmds.get('on'):
-            data['schedule'] = 'ON'
+            schedule = 'ON'
         elif self.cmds.get('off'):
-            data['schedule'] = 'OFF'
+            schedule = 'OFF'
         elif self.cmds.get('default'):
-            data['schedule'] = ''
+            schedule = ''
         else:
-            data['schedule'] = self.opts.get('cron')
+            schedule = self.opts.get('cron')
 
-        params = {'environment':env, 'asgname':name, 'data':data}
-        result = self.api.put_asg_scaling_schedule(**params)
-
+        result = self.set_schedule(env, name, schedule)
         n = len(list(result.get('ChangedInstances')))
         i = 'instance' if n == 1 else 'instances'
         s = 'default' if self.cmds.get('default') else data.get('schedule')
-        
         self.show_result(result, "Scheduled {0} {1} in {2} to: {3}".format(n, i, name, s))
+
+    def set_schedule(self, env, name, schedule):        
+        data = {'propagateToInstances':True, 'schedule':schedule}
+        params = {'environment':env, 'asgname':name, 'data':data}
+        return self.api.put_asg_scaling_schedule(**params)
 
     def get_status(self, env, name):
         result = self.api.get_asg_ready(env, name)

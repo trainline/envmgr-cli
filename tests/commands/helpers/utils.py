@@ -19,6 +19,24 @@ def load_json_data(file_name):
         json_data = json.load(file_data)
     return json_data
 
+def mock_asg():
+    name = 'asg-{0}'.format(rand_str())
+    arn = 'arn:aws:autoscaling:eu-west-1:123456789012:asg:{0}/mock'.format(rand_str())
+    return {
+        'AutoScalingGroupName': name,
+        'AutoScalingGroupARN': arn,
+        'Tags': [ mock_asg_tag('SecurityZone', 'Other') ]
+    }
+
+def mock_asg_tag(key, value):
+    return {
+        'ResourceId': 'envmgr-cli-mock',
+        'ResourceType': 'auto-scaling-group',
+        'Key': key,
+        'Value': value,
+        'PropagateAtLaunch': True
+    }
+
 def mock_server(cluster, ami_name, is_latest_stable, current=1, desired=1):
     rnd = rand_str()
     name = 'mock-server-{0}'.format(rnd)
