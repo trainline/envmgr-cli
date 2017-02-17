@@ -28,9 +28,13 @@ setup(
         'semver',
         'environment_manager==0.1.2'
     ],
-    extras_require = {
-        'test': ['pytest', 'mock', 'nose', 'nose-parameterized', 'responses']
-    },
+    tests_require = [
+        'pytest',
+        'mock',
+        'nose',
+        'nose-parameterized',
+        'responses'
+    ],
     entry_points = {
         'console_scripts': [
             'envmgr=envmgr.cli:main',
