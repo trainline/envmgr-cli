@@ -68,18 +68,12 @@ Examples
 service and 'my-asg' is an ASG, all of which are already registered in
 Environment Manager.*
 
-Get service health
-^^^^^^^^^^^^^^^^^^
-
 ::
 
     envmgr get AwesomeService health in prod-1
 
 Gets the health status of all instances of *AwesomeService*, in all
 slices.
-
-Get service active slice
-^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -88,9 +82,6 @@ Get service active slice
 Gets the the active slice information for the *AwesomeService* service
 in *prod-1* environment.
 
-Get ASG status
-^^^^^^^^^^^^^^
-
 ::
 
     envmgr get asg my-asg status in prod-1
@@ -98,17 +89,12 @@ Get ASG status
 Gets the status of the *my-asg* ASG in the *prod-1* environment. Status
 is calculated as an aggregate of all instances in the ASG.
 
-Get ASG schedule
-^^^^^^^^^^^^^^^^
-
 ::
 
     envmgr get asg my-asg schedule in prod-1
 
 Gets the schedule value set on the  *my-asg* ASG in the *prod-1* environment. Note this will tell you what the schedule is configured to - not the current state according to the schedule.
 
-Get deployment status
-^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -117,18 +103,12 @@ Get deployment status
 Gets the current status of the deployment with ID
 *a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994*.
 
-Wait for deployment
-^^^^^^^^^^^^^^^^^^^
-
 ::
 
     envmgr wait-for deploy a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994
 
 Blocks and waits until the deployment with ID
 *a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994* either succeeds or fails.
-
-Wait for ASG
-^^^^^^^^^^^^
 
 ::
 
@@ -137,18 +117,12 @@ Wait for ASG
 Blocks and waits until all instances in the ASG *my-asg* are ready for
 deployment (In Service).
 
-Wait until a service is healthy
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 ::
 
     envmgr wait-for healthy AwesomeService in prod-1
 
 Blocks and waits until the service *AwesomeService* is running with all
 healthchecks passing.
-
-Schedule ASG state
-^^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -157,17 +131,11 @@ Schedule ASG state
 Sets the schedule of the ASG *my-asg* in *prod-1* to be off permanently
 until further notice.
 
-Publish a new build
-^^^^^^^^^^^^^^^^^^^
-
 ::
 
     envmgr publish build-22.zip as AwesomeService 1.2.9 
 
 Publish the file *build-22.zip* as version *1.2.9* of *AwesomeService*.
-
-Deploy a service
-^^^^^^^^^^^^^^^^
 
 ::
 
@@ -175,9 +143,6 @@ Deploy a service
 
 Deploy the published version *1.2.9* of *AwesomeService* into the
 *prod-1* environment.
-
-Toggle a service
-^^^^^^^^^^^^^^^^
 
 ::
 
