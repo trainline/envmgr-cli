@@ -230,20 +230,18 @@ Or provide the hostname with each command:
 
 Development
 -----------
-Install development dependencies:
+To install all test dependencies and run all tests, simply run:
 
 ::
 
-    pip install -e .
+    python setup.py test [--adopts -v]
 
 
-Run Tests
-^^^^^^^^^^
-Run all tests:
+For convenience this is also available via the included `makefile`:
 
 ::
 
-    pytest -v
+    make test
 
 
 
