@@ -1,5 +1,7 @@
-envmgr
+envmgr 
 ======
+
+.. image:: https://img.shields.io/badge/python-2.7.12%2C%203.6.0-blue.svg
 
 A cross-platform CLI client for `Environment
 Manager <https://github.com/trainline/environment-manager>`__
