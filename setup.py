@@ -1,5 +1,7 @@
 """ Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information. """
 
+import sys
+
 from setuptools import find_packages, setup
 from codecs import open
 from os.path import abspath, dirname, join
@@ -8,6 +10,9 @@ from envmgr import __version__
 this_dir = abspath(dirname(__file__))
 with open(join(this_dir, 'README.rst'), encoding='utf-8') as file:
     long_description = file.read()
+
+needs_pytest = {'pytest', 'test'}.intersection(sys.argv)
+pytest_runner = ['pytest-runner', 'nose'] if needs_pytest else []
 
 setup(
     name = 'envmgr-cli',
@@ -28,10 +33,7 @@ setup(
         'semver',
         'environment_manager==0.1.2'
     ],
-    setup_requires = [
-    	'pytest-runner',
-    	'nose',
-    ],
+    setup_requires = pytest_runner,
     tests_require = [
         'pytest',
         'mock',
