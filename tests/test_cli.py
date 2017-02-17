@@ -34,7 +34,8 @@ class TestCLI(TestCase):
         self.assertEqual(sys.excepthook, except_hook)
 
     def assert_command(self, cmd, func):
-        argv = ['/usr/local/bin/envmgr'] + cmd.split(' ')
+        required_opts = '--host=acme.com --user=roadrunner --pass=pa$$word'
+        argv = ['/usr/local/bin/envmgr'] + cmd.split(' ') + required_opts.split(' ')
         with patch.object(sys, 'argv', argv):
             main()
             func.assert_called_once()
