@@ -16,6 +16,14 @@ class Deploy(BaseCommand):
             self.deploy_service(**self.cli_args)
 
     def deploy_service(self, service, version, env, slice=None):
+        is_dry_run = self.opts.get('dry-run') == True
+        result = self.create_deployment(service, version, env, slice, is_dry_run)
+        if is_dry_run:
+            self.show_result(result, "Deployment dry run was successful")
+        else:
+            self.show_result(result, result['id'])
+
+    def create_deployment(self, service, version, env, slice, is_dry_run):
         data = {
             'environment': env,
             'service': service,
@@ -28,17 +36,8 @@ class Deploy(BaseCommand):
         else:
             data['mode'] = 'overwrite'
 
-        if self.opts.get('dry-run'):
-            dry_run = 'true'
-        else:
-            dry_run = 'false'
-
-        result = self.api.post_deployments(dry_run, data)
-
-        if dry_run == 'true':
-            self.show_result(result, "Deployment dry run was successful")
-        else:
-            self.show_result(result, result['id'])
+        dry_run = 'true' if is_dry_run else 'false'
+        return self.api.post_deployments(dry_run, data)
 
     def get_deploy_status(self, deploy_id):
         result = self.api.get_deployment(deploy_id)
