@@ -28,6 +28,10 @@ setup(
         'semver',
         'environment_manager==0.1.2'
     ],
+    setup_requires = [
+    	'pytest-runner',
+    	'nose',
+    ],
     tests_require = [
         'pytest',
         'mock',
