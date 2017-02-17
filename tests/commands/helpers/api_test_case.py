@@ -1,7 +1,5 @@
 # Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
-""" Base API Test Class """
-
 import sys
 import re
 import responses

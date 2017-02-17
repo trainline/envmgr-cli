@@ -3,18 +3,21 @@
 import responses
 import random
 import string
+import os
 
 from unittest import TestCase
 from envmgr.commands import Patch
 from nose_parameterized import parameterized, param
+from mock import patch
 from .helpers.api_test_case import APITestCase
-from .helpers.utils import mock_server
+from .helpers.utils import mock_server, MOCK_ENV_VARS
 from .helpers.patch_scenarios import TEST_SCENARIOS
 
 class PatchTest(APITestCase):
 
     @parameterized.expand( TEST_SCENARIOS )
     @responses.activate
+    @patch.dict(os.environ, MOCK_ENV_VARS)
     def test_get_patch_requirements(self, *args, **kwargs):
         patch_cluster = kwargs.get('patch_cluster')
         expected_result = kwargs.get('expected')

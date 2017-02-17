@@ -7,6 +7,12 @@ import json
 from codecs import open
 from os.path import abspath, dirname, join
 
+MOCK_ENV_VARS = {
+    'ENVMGR_HOST':'envmgr.acme.com',
+    'ENVMGR_USER':'roadrunner',
+    'ENVMGR_PASS':'meepmeep'
+}
+
 def load_json_data(file_name):
     this_dir = abspath(dirname(__file__))
     with open(join(this_dir, '../../data/', file_name), encoding='utf-8') as file_data:
