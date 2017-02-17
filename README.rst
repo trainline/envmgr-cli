@@ -68,73 +68,73 @@ Examples
 service and 'my-asg' is an ASG, all of which are already registered in
 Environment Manager.*
 
-Get the health status of all instances of *AwesomeService*, in all slices:
+**Get the health status of all instances of AwesomeService, in all slices:**
 
 ::
 
     envmgr get AwesomeService health in prod-1
 
-Get the the active slice information for the *AwesomeService* service in *prod-1* environment:
+**Get the the active slice information for the AwesomeService service in prod-1 environment:**
 
 ::
 
     envmgr get AwesomeService active slice in prod-1
 
-Get the status of the *my-asg* ASG in the *prod-1* environment. Status is calculated as an aggregate of all instances in the ASG:
+**Get the status of the my-asg ASG in the prod-1 environment. Status is calculated as an aggregate of all instances in the ASG:**
 
 ::
 
     envmgr get asg my-asg status in prod-1
 
-Get the schedule value set on the  *my-asg* ASG in the *prod-1* environment. Note this will tell you what the schedule is configured to - not the current state according to the schedule:
+**Get the schedule value set on the my-asg ASG in the prod-1 environment. Note this will tell you what the schedule is configured to - not the current state according to the schedule:**
 
 ::
 
     envmgr get asg my-asg schedule in prod-1
 
-Get the current status of the deployment with ID *a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994*:
+**Get the current status of the deployment with ID a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994:**
 
 ::
 
     envmgr get deploy status a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994
 
-Block and wait until the deployment with ID *a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994* either succeeds or fails:
+**Block and wait until the deployment with ID a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994 either succeeds or fails:**
 
 ::
 
     envmgr wait-for deploy a2fbb0c0-ed4c-11e6-85b1-2b6d1cb68994
 
-Block and wait until all instances in the ASG *my-asg* are ready fordeployment (In Service):
+**Block and wait until all instances in the ASG my-asg are ready fordeployment (In Service):**
 
 ::
 
     envmgr wait-for asg my-asg in prod-1
 
-Block and wait until the service *AwesomeService* is running with all healthchecks passing:
+**Block and wait until the service AwesomeService is running with all healthchecks passing:**
 
 ::
 
     envmgr wait-for healthy AwesomeService in prod-1
 
-Set the schedule of the ASG *my-asg* in *prod-1* to be off permanently until further notice:
+**Set the schedule of the ASG my-asg in prod-1 to be off permanently until further notice:**
 
 ::
 
     envmgr schedule asg my-asg off in prod-1
 
-Publish the file *build-22.zip* as version *1.2.9* of *AwesomeService*:
+**Publish the file build-22.zip as version 1.2.9 of AwesomeService:**
 
 ::
 
     envmgr publish build-22.zip as AwesomeService 1.2.9 
 
-Deploy the published version *1.2.9* of *AwesomeService* into the *prod-1* environment:
+**Deploy the published version 1.2.9 of AwesomeService into the prod-1 environment:**
 
 ::
 
     envmgr deploy AwesomeService 1.2.9 in prod-1
 
-Toggle the upstreams for *AwesomeService* in the *prod-1* environment:
+**Toggle the upstreams for AwesomeService in the prod-1 environment:**
 
 ::
 
