@@ -26,7 +26,7 @@ setup(
         'tabulate',
         'repoze.lru',
         'semver',
-        'environment_manager==0.0.9'
+        'environment_manager==0.1.2'
     ],
     extras_require = {
         'test': ['pytest', 'mock', 'nose', 'nose-parameterized', 'responses']

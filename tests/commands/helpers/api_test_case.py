@@ -27,7 +27,7 @@ class APITestCase(TestCase):
                 body=response_data, status=200, content_type='application/json')
 
     def mock_authentication(self):
-        token_url = re.compile(r'https?://[\w\.]+/api/token')
+        token_url = re.compile(r'https?://[\w\.]+/api/v1/token')
         
         responses.add(responses.POST, token_url, match_querystring=True,
                 body='mock-token', status=200, content_type='text/plain')
