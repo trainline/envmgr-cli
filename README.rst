@@ -99,7 +99,7 @@ Gets the status of the *my-asg* ASG in the *prod-1* environment. Status
 is calculated as an aggregate of all instances in the ASG.
 
 Get ASG schedule
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
 ::
 
