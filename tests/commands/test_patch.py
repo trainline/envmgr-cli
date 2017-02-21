@@ -24,6 +24,7 @@ class PatchTest(APITestCase):
         from_ami = kwargs.get('from_ami')
 
         servers_in_env = []
+        self.mock_response(r'/asgs/[\w\.\-]+', {'AvailabilityZones':[1]})
 
         # Create a list of servers in env, based on test scenario
         for server_desc in args:

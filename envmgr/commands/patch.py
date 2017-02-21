@@ -3,15 +3,20 @@
 import semver
 
 from envmgr.commands.base import BaseCommand
+from math import ceil
 from tabulate import tabulate
 from repoze.lru import lru_cache
 
 class Patch(BaseCommand):
     amis = []
     servers = []
+    state = None
 
     def run(self):
-        self.get_patch_status(**self.cli_args)
+        if self.cmds.get('get') and self.cmds.get('status'):
+            self.get_patch_status(**self.cli_args)
+        else:
+            self.run_patch_update(**self.cli_args)
     
     def get_patch_status(self, cluster, env):
         from_ami = self.opts.get('from-ami')
@@ -27,11 +32,15 @@ class Patch(BaseCommand):
                 1: p.get('instances_count'),
                 2: p.get('from_ami'),
                 3: '->',
-                4: p.get('to_ami'),
-                5: 'WARNING' if p.get('Warning') is not None else ''
+                4: p.get('scale_up_count'),
+                5: p.get('to_ami'),
+                6: 'WARNING' if p.get('Warning') is not None else ''
                 }, result)
             messages.append(tabulate(table_data, tablefmt="plain"))
             self.show_result(result, messages)
+
+    def run_patch_update(self, cluster, env):
+        pass
 
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None):
         # We're only interested in Windows as Linux instances auto-update
@@ -63,7 +72,20 @@ class Patch(BaseCommand):
             )
         ]
         # List of patches to apply
-        return map(self.create_patch_item, servers_to_update)
+        patches = map(self.create_patch_item, servers_to_update)
+        self.assign_scale_requirements(patches, env)
+        return patches
+
+    def assign_scale_requirements(self, patches, env):
+        for p in patches:
+            asg = self.api.get_asg(env, p.get('server_name'))
+            n_azs = len(list(asg.get('AvailabilityZones')))
+            n_instances = p.get('instances_count')
+            scale_up_count = n_instances * 2
+            if scale_up_count >= n_azs and scale_up_count % n_azs != 0:
+                scale_up_count += 1
+            p['az_count'] = n_azs
+            p['scale_up_count'] = scale_up_count
 
     def create_patch_item(self, server):
         from_name = server.get('Ami').get('Name')
