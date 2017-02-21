@@ -16,11 +16,11 @@ TEST_SCENARIOS=[
         expected=5
     ),
     param( # Large mixed set of latest Widows, old Windows and Linux
-        {'n':5000, 'ami':WINDOWS_SECURE_7_0_0, 'latest':False, 'cluster':'A-team'}, 
-        {'n':10000, 'ami':LATEST_STABLE_WINDOWS_APP, 'latest':True, 'cluster':'A-team'}, 
-        {'n':7000, 'ami':LATEST_STABLE_UBUNTU, 'latest':True, 'cluster':'A-team'}, 
+        {'n':500, 'ami':WINDOWS_SECURE_7_0_0, 'latest':False, 'cluster':'A-team'}, 
+        {'n':1000, 'ami':LATEST_STABLE_WINDOWS_APP, 'latest':True, 'cluster':'A-team'}, 
+        {'n':700, 'ami':LATEST_STABLE_UBUNTU, 'latest':True, 'cluster':'A-team'}, 
         patch_cluster='A-team',
-        expected=5000
+        expected=500
     ),
     param( # Only old Windows
         {'n':87, 'ami':WINDOWS_SECURE_7_0_0, 'latest':False, 'cluster':'A-team'}, 
