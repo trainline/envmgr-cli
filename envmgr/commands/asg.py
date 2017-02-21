@@ -12,6 +12,8 @@ class ASG(BaseCommand):
                 self.describe_schedule(**self.cli_args)
             else:
                 self.update_schedule(**self.cli_args)
+        elif self.cmds.get('health'):
+            self.describe_health(**self.cli_args)
         elif self.cmds.get('status'):
             self.get_status(**self.cli_args)
         elif self.cmds.get('wait-for'):
@@ -25,6 +27,27 @@ class ASG(BaseCommand):
             self.show_result({}, "No ASG schedule set")
         else:
             self.show_result(result, "Schedule for {0} in {1} is {2}".format(name, env, result.get('Value')))
+
+    def describe_health(self, env, name):
+        result = self.get_health(env, name)
+        
+        if result.get('is_healthy'):
+            n_services = result.get('required_count')
+            n_instances = result.get('instances_count')
+            message = '{0} is healthy ({1} services on {2} instances)'.format(name, n_services, n_instances)
+        else:
+            if result.get('required_count') == 0: 
+                message = '{0} is in an unknown state (no expected services)'.format(name)
+            elif result.get('missing_count') is not None:
+                message = '{0} is not healthy ({1} missing services)'.format(name, result.get('missing_count'))
+            elif result.get('unexpected_count') is not None:
+                message = '{0} is not healthy ({1} unexpected services)'.format(name, result.get('unexpected_count'))
+            elif result.get('instances_count') == 0:
+                message = '{0} is not healthy (no instances)'.format(name)
+            else:
+                message = '{0} is not healthy ({1} instances unhealthy or not ready)'.format(name, result.get('unhealthy_count'))
+
+        self.show_result(result, message)
 
     def get_schedule(self, env, name):
         asg = self.api.get_asg(env, name)
@@ -70,6 +93,47 @@ class ASG(BaseCommand):
             self.show_result(result, "{0} is not ready for deployment (instances: {1}, Total={2})".format(name, ", ".join(states), n_total))
 
         return is_ready 
+
+    def get_health(self, env, name):
+        asg = self.api.get_environment_asg_servers(env, name)
+        service_counts = asg.get('ServicesCount')
+        n_expected = service_counts.get('Expected')        
+        n_unexpected = service_counts.get('Unexpected')
+        n_missing = service_counts.get('Missing')
+        result = {'required_count':n_expected}
+
+        if n_missing != 0:
+            result['is_healthy'] = False
+            result['missing_count'] = n_missing
+            return result
+        
+        if n_unexpected != 0:
+            result['is_healthy'] = False
+            result['unexpected_count'] = n_unexpected
+            return result
+        
+        if n_expected == 0:
+            result['is_healthy'] = False
+            return result
+
+        instances = list(asg.get('Instances'))
+        if not instances:
+            result['is_healthy'] = False
+            result['instances_count'] = 0
+            return result
+        
+        healthy_instances = [ instance for instance in instances if instance.get('RunningServicesCount') == n_expected ]
+        n_instances = len(instances)
+        n_healthy = len(healthy_instances)
+        result['instances_count'] = n_instances
+        
+        if n_healthy != n_instances:
+            result['is_healthy'] = False
+            result['unhealthy_count'] = (n_instances - n_healthy)
+            return result
+        else:
+            result['is_healthy'] = True
+            return result
 
     def wait_for(self, env, name):
         while True:
