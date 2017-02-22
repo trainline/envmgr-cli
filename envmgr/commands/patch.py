@@ -88,7 +88,7 @@ class Patch(BaseCommand):
             )
         ]
         # List of patches to apply
-        patches = map(self.create_patch_item, servers_to_update)
+        patches = list(map(self.create_patch_item, servers_to_update))
         self.assign_scale_requirements(patches, env)
         return patches
 
