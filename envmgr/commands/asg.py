@@ -26,7 +26,10 @@ class ASG(BaseCommand):
         if not result:
             self.show_result({}, "No ASG schedule set")
         else:
-            self.show_result(result, "Schedule for {0} in {1} is {2}".format(name, env, result.get('Value')))
+            schedule_value = result.get('Value')
+            if not schedule_value:
+                schedule_value = 'default'
+            self.show_result(result, "Schedule for {0} in {1} is {2}".format(name, env, schedule_value))
 
     def describe_health(self, env, name):
         result = self.get_health(env, name)
