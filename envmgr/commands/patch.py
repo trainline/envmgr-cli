@@ -3,6 +3,7 @@
 import semver
 
 from envmgr.commands.base import BaseCommand
+from envmgr.commands.patch_state import PatchState
 from math import ceil
 from tabulate import tabulate
 from repoze.lru import lru_cache
@@ -41,6 +42,21 @@ class Patch(BaseCommand):
 
     def run_patch_update(self, cluster, env):
         pass
+        """
+        self.state = PatchState(self.api)
+        patch = self.state.get_patch_if_exists(cluster, env)
+        
+        if patch is None:
+            self.scale_out()
+        else:
+            state = patch.get('state')
+            if state == self.WAIT_FOR_SCALE_OUT:
+                self.wait_for_scale_out()
+            elif state == self.WAIT_FOR_SCALE_IN:
+                self.wait_for_scale_in()
+            else:
+                print('Unknown state')
+        """
 
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None):
         # We're only interested in Windows as Linux instances auto-update

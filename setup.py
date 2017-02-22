@@ -31,6 +31,7 @@ setup(
         'tabulate',
         'repoze.lru',
         'semver',
+        'appdirs',
         'environment_manager==0.1.2'
     ],
     setup_requires = pytest_runner,
