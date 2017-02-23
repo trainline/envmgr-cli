@@ -3,7 +3,7 @@
 import semver
 
 from envmgr.commands.base import BaseCommand
-from envmgr.commands.patch_state import PatchState
+from envmgr.commands.patch_process import PatchProcess
 from math import ceil
 from tabulate import tabulate
 from repoze.lru import lru_cache
@@ -11,7 +11,6 @@ from repoze.lru import lru_cache
 class Patch(BaseCommand):
     amis = []
     servers = []
-    state = None
 
     def run(self):
         if self.cmds.get('get') and self.cmds.get('status'):
@@ -25,7 +24,7 @@ class Patch(BaseCommand):
         result = self.get_patch_requirements(cluster, env, from_ami, to_ami)
 
         if not result:
-            self.show_result(result, 'All {0} Windows servers are up to date in {1}'.format(cluster, env))
+            self.patch_not_required(cluster, env)
         else:
             messages = ['The following patch operations are required:']
             table_data = map(lambda p: {
@@ -40,23 +39,24 @@ class Patch(BaseCommand):
             messages.append(tabulate(table_data, tablefmt="plain"))
             self.show_result(result, messages)
 
+    def patch_not_required(self, cluster, env):
+        self.show_result({}, 'All {0} Windows servers are up to date in {1}'.format(cluster, env))
+
     def run_patch_update(self, cluster, env):
-        pass
-        """
-        self.state = PatchState(self.api)
-        patch = self.state.get_patch_if_exists(cluster, env)
+        if env.lower() == 'pr1':
+            print('Bulk patching is disabled in production')
+            return
         
-        if patch is None:
-            self.scale_out()
-        else:
-            state = patch.get('state')
-            if state == self.WAIT_FOR_SCALE_OUT:
-                self.wait_for_scale_out()
-            elif state == self.WAIT_FOR_SCALE_IN:
-                self.wait_for_scale_in()
-            else:
-                print('Unknown state')
-        """
+        patch_process = PatchProcess(self.api)
+        patch_operation = patch_process.get_existing(cluster, env)
+        
+        if patch_operation is None:
+            from_ami = self.opts.get('from-ami')
+            to_ami = self.opts.get('to-ami')
+            patch_operation = self.get_patch_requirements(cluster, env, from_ami, to_ami)
+            if not patch_operation:
+                return self.patch_not_required(cluster, env)
+        patch_process.process(patch_operation, cluster, env)
 
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None):
         # We're only interested in Windows as Linux instances auto-update
@@ -67,7 +67,8 @@ class Patch(BaseCommand):
         # List of clusters' servers with AMI info
         self.servers = self.api.get_environment_servers(env).get('Value')
         self.servers = [ server for server in self.servers if 
-            'Ami' in server and server.get('Cluster').lower() == cluster.lower() ]
+            'Ami' in server and server.get('Cluster').lower() == cluster.lower() 
+            and server.get('IsBeingDeleted') != True ]
         
         # Update any non-latest-stable if no "from ami" given
         if from_ami is not None: 
@@ -114,6 +115,7 @@ class Patch(BaseCommand):
             'server_name': server.get('Name'),
             'from_ami': from_name,
             'to_ami': to_name,
+            'new_ami_id': target.get('ImageId'),
             'server_role': server.get('Role'),
             'services_count': len(list(server.get('Services'))),
             'instances_count': server.get('Size').get('Current')
