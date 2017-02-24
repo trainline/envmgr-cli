@@ -1,6 +1,10 @@
 # Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 import semver
+import time
+import sys
+import os
+import atexit
 
 from envmgr.commands.base import BaseCommand
 from envmgr.commands.patch_process import PatchProcess
@@ -46,7 +50,7 @@ class Patch(BaseCommand):
         if env.lower() == 'pr1':
             print('Bulk patching is disabled in production')
             return
-        
+
         patch_process = PatchProcess(self.api)
         patch_operation = patch_process.get_existing(cluster, env)
         
