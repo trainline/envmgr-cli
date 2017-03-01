@@ -9,6 +9,7 @@ from envmgr.commands.asg import ASG
 from codecs import open
 from hashlib import sha1
 from appdirs import user_data_dir
+from tabulate import tabulate
 
 class PatchProcess(object):
 
@@ -25,9 +26,6 @@ class PatchProcess(object):
     def __init__(self, api):
         self.api = api
         self.app_dir = user_data_dir('envmgr', 'trainline')
-        self.widgets = [RotatingMarker(), ' ', Percentage(), ' ', FormatLabel('Calculating patch requirements'), ' ', Bar(), ' ', Timer()]
-        self.progress = ProgressBar(redirect_stdout=True, widgets=self.widgets)
-        self.progress.update(0)
 
     def update_progress(self):
         patches = self.operation.get('patches')
@@ -123,6 +121,11 @@ class PatchProcess(object):
             self.update_patch_status(patch, self.STATE_COMPLETE, False)
 
     def process(self, patch_operation, cluster, env):
+        # Setup progress bar
+        self.widgets = [RotatingMarker(), ' ', Percentage(0), ' ', FormatLabel('Calculating patch requirements'), ' ', Bar(), ' ', Timer()]
+        self.progress = ProgressBar(redirect_stdout=True, widgets=self.widgets, max_value=100)
+        self.progress.update(0)
+        
         self.operation = self.get_operation(patch_operation, cluster, env)
         self.check_status()
 
@@ -150,6 +153,33 @@ class PatchProcess(object):
             else:
                 time.sleep(10)
 
+    def get_report(self, cluster, env):
+        current_operation = self.get_existing(cluster, env)
+        if current_operation is None:
+            print('No pending patch operation found for {0} in {1}'.format(cluster, env))
+        else:
+            status = {
+                    None: 'Updating Launch Config',
+                    self.STATE_LC_UPDATED: 'Setting scale out size',
+                    self.STATE_SCALE_OUT_TARGET_SET: 'Scaling out',
+                    self.STATE_SCALED_OUT: 'Setting scale in size',
+                    self.STATE_SCALE_IN_TARGET_SET: 'Scaling in',
+                    self.STATE_COMPLETE: 'Complete'
+                    }
+
+            patches = current_operation.get('patches')
+            table_data = map(lambda p: {
+                0: p.get('server_name'),
+                1: p.get('to_ami'),
+                2: p.get('scale_up_count'),
+                3: p.get('instances_count'),
+                4: status[p.get('state')]
+                }, patches)
+            
+            headers = {0:'ASG', 1:'Target AMI', 2:'Out', 3:'In', 4:'Status'}
+
+            print(tabulate(table_data, headers, tablefmt='fancy_grid'))
+
     def get_operation(self, patch_item, cluster, env):
         if isinstance(patch_item, list):
             return {
@@ -163,6 +193,7 @@ class PatchProcess(object):
     
     def update_patch_status(self, patch, status, write=True):
         patch['state'] = status
+        patch['updated'] = str(datetime.datetime.utcnow())
         if write:
             self.write_patch_status()
     
