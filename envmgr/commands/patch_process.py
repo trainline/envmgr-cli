@@ -10,6 +10,7 @@ from codecs import open
 from hashlib import sha1
 from appdirs import user_data_dir
 from tabulate import tabulate
+from builtins import input
 
 class PatchProcess(object):
 
@@ -166,7 +167,6 @@ class PatchProcess(object):
                     self.STATE_SCALE_IN_TARGET_SET: 'Scaling in',
                     self.STATE_COMPLETE: 'Complete'
                     }
-
             patches = current_operation.get('patches')
             table_data = map(lambda p: {
                 0: p.get('server_name'),
@@ -177,8 +177,19 @@ class PatchProcess(object):
                 }, patches)
             
             headers = {0:'ASG', 1:'Target AMI', 2:'Out', 3:'In', 4:'Status'}
-
             print(tabulate(table_data, headers, tablefmt='fancy_grid'))
+
+    def kill_current(self, cluster, env):
+        current_operation = self.get_existing(cluster, env)
+        if current_operation is None:
+            print('No pending patch operation found for {0} in {1}'.format(cluster, env))
+        else:
+            confirm = input('Are you sure you want to kill this process? (y/n) ')
+            if confirm.lower() == 'y':
+                print('Confirmed')
+            else:
+                print('Aborted')
+
 
     def get_operation(self, patch_item, cluster, env):
         if isinstance(patch_item, list):

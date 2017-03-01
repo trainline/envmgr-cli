@@ -52,10 +52,11 @@ class Patch(BaseCommand):
             return
 
         patch_process = PatchProcess(self.api)
-        get_report = self.opts.get('report', False)
-
-        if get_report:
+        
+        if self.opts.get('report', False):
             patch_process.get_report(cluster, env)
+        elif self.opts.get('kill', False):
+            patch_process.kill_current(cluster, env)
         return
 
         patch_operation = patch_process.get_existing(cluster, env)

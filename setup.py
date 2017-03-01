@@ -30,6 +30,7 @@ setup(
         'simplejson',
         'tabulate',
         'repoze.lru',
+        'future',
         'semver',
         'appdirs',
         'environment_manager==0.1.2'
