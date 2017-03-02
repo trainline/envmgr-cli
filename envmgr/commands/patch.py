@@ -7,9 +7,9 @@ import os
 import atexit
 
 from envmgr.commands.base import BaseCommand
-from envmgr.commands.patch_process import PatchProcess
+from envmgr.commands.patch_operation import PatchOperation
+from envmgr.commands.patch_table import patch_table
 from math import ceil
-from tabulate import tabulate
 from repoze.lru import lru_cache
 
 class Patch(BaseCommand):
@@ -30,17 +30,9 @@ class Patch(BaseCommand):
         if not result:
             self.patch_not_required(cluster, env)
         else:
-            messages = ['The following patch operations are required:']
-            table_data = map(lambda p: {
-                0: p.get('server_name'),
-                1: p.get('instances_count'),
-                2: p.get('from_ami'),
-                3: '->',
-                4: p.get('scale_up_count'),
-                5: p.get('to_ami'),
-                6: 'WARNING' if p.get('Warning') is not None else ''
-                }, result)
-            messages.append(tabulate(table_data, tablefmt="plain"))
+            get_status = lambda p: 'WARNING' if p.get('Warning') is not None else ''
+            table_data = patch_table(result, get_status)
+            messages = ['', 'The following patch operations are required:', table_data]
             self.show_result(result, messages)
 
     def patch_not_required(self, cluster, env):
@@ -51,23 +43,21 @@ class Patch(BaseCommand):
             print('Bulk patching is disabled in production')
             return
 
-        patch_process = PatchProcess(self.api)
+        patch_operation = PatchOperation(self.api)
         
         if self.opts.get('report', False):
-            patch_process.get_report(cluster, env)
+            patch_operation.get_report(cluster, env)
         elif self.opts.get('kill', False):
-            patch_process.kill_current(cluster, env)
-        return
-
-        patch_operation = patch_process.get_existing(cluster, env)
-        
-        if patch_operation is None:
-            from_ami = self.opts.get('from-ami')
-            to_ami = self.opts.get('to-ami')
-            patch_operation = self.get_patch_requirements(cluster, env, from_ami, to_ami)
-            if not patch_operation:
-                return self.patch_not_required(cluster, env)
-        patch_process.process(patch_operation, cluster, env)
+            patch_operation.kill_current(cluster, env)
+        else:
+            current_operation = patch_operation.get_existing(cluster, env)
+            if current_operation is None:
+                from_ami = self.opts.get('from-ami')
+                to_ami = self.opts.get('to-ami')
+                current_operation = self.get_patch_requirements(cluster, env, from_ami, to_ami)
+                if not current_operation:
+                    return self.patch_not_required(cluster, env)
+            patch_operation.run(current_operation, cluster, env)
 
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None):
         # We're only interested in Windows as Linux instances auto-update

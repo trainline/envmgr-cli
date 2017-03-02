@@ -69,7 +69,7 @@ commands = {
 def except_hook(exec_type, value, trace_back):
     print(value)
 
-sys.excepthook = except_hook
+# sys.excepthook = except_hook
 
 def main():
     """Main CLI entrypoint."""
