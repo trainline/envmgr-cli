@@ -26,6 +26,7 @@ class PatchOperation(object):
         self.operation = self.get_operation(patch_operation, cluster, env)
         self.proc = PatchProcess(self.api, self.operation)
         self.progress = PatchProgress()
+        self.progress.start()
         self.check_status()
 
     def check_status(self):
@@ -39,9 +40,7 @@ class PatchOperation(object):
             scaling_in = self.get_patches_by_state(PatchStates.STATE_SCALE_IN_TARGET_SET)
             complete = self.get_patches_by_state(PatchStates.STATE_COMPLETE)
 
-
             self.progress.update(*map(len, [patches, set_scale_out, scaling_out, set_scale_in, scaling_in, complete]))
-            
             self.proc.update_launch_configs(update_lc)
             self.proc.set_scale_out_size(set_scale_out)
             self.proc.monitor_scale_out(scaling_out)
@@ -62,17 +61,8 @@ class PatchOperation(object):
         if current_operation is None:
             print('No pending patch operation found for {0} in {1}'.format(cluster, env))
         else:
-            status = {
-                    None: 'Updating Launch Config',
-                    PatchStates.STATE_LC_UPDATED: 'Setting scale out size',
-                    PatchStates.STATE_SCALE_OUT_TARGET_SET: 'Scaling out',
-                    PatchStates.STATE_SCALED_OUT: 'Setting scale in size',
-                    PatchStates.STATE_SCALE_IN_TARGET_SET: 'Scaling in',
-                    PatchStates.STATE_COMPLETE: 'Complete'
-                    }
-            get_status = lambda p: status[p.get('state')]
             patches = current_operation.get('patches')
-            table_data = patch_table(patches, get_status)
+            table_data = patch_table(patches, PatchStates.get_friendly_name)
             print(table_data)
             
     def kill_current(self, cluster, env):
