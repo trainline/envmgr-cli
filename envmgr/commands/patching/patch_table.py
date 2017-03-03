@@ -1,4 +1,4 @@
-
+# Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 import os
 
@@ -15,4 +15,3 @@ def patch_table(patches, get_status):
     
     headers = {0:'ASG', 1:'Target AMI', 2:'Size', 3:'Scale out', 4:'Status'}
     return os.linesep + tabulate(table_data, headers, tablefmt="simple") + os.linesep
-
