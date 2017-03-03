@@ -50,6 +50,7 @@ class Patch(BaseCommand):
 
     def run_patch_update(self, cluster, env):
         if env.lower() == 'pr1':
+            self.stop_spinner()
             print('Bulk patching is disabled in production')
             return
 

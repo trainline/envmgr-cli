@@ -35,6 +35,11 @@ class PatchProgress(object):
         self.stop_running.set()
         self.progress_thread.join()
 
+    def finish(self, total):
+        msg = '[Patching {0} ASGs]: 0 Scaling out, 0 Scaling in, {0} Complete'.format(total)
+        self.widgets[4] = FormatLabel(msg)
+        self.progress.finish()
+
     def init_progress(self):
         while not self.stop_running.is_set():
             self.progress.update(self.total_progress)

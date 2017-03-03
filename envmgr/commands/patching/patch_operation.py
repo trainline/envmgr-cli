@@ -79,8 +79,7 @@ class PatchOperation(object):
             self.proc.monitor_scale_in(scaling_in)
             
             if all([ patch.get('state') == PatchStates.STATE_COMPLETE for patch in patches ]):
-                self.update_progress()
-                self.progress.finish()
+                self.progress.finish(len(patches))
                 PatchFile.delete(self.operation.get('cluster'), self.operation.get('env'))
                 return
             else:
