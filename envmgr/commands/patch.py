@@ -7,8 +7,8 @@ import os
 import atexit
 
 from envmgr.commands.base import BaseCommand
-from envmgr.commands.patch_operation import PatchOperation
-from envmgr.commands.patch_table import patch_table
+from envmgr.commands.patching.patch_operation import PatchOperation
+from envmgr.commands.patching.patch_table import patch_table
 from math import ceil
 from repoze.lru import lru_cache
 
