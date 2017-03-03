@@ -10,7 +10,7 @@ Usage:
     envmgr get asg <name> health in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr get asg <name> schedule in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr get deploy status <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr get <cluster> patch status in <env> [--from-ami=<old_ami> --to-ami=<new_ami>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get <cluster> patch status in <env> [--from-ami=<old_ami> --to-ami=<new_ami>] [(--whitelist=<asg>... | --blacklist=<asg>...)] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr wait-for deploy <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr wait-for healthy <service> in <env> [<slice>] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr wait-for asg <name> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
@@ -26,7 +26,9 @@ Options:
     -r --role=<server_role>     Server role for deploying services in multiple roles.
     -f --from-ami=<old_ami>     The AMI Name to update from.
     -t --to-ami=<new_ami>       The AMI Name to update to.
-    -k --kill                   Kills a currently running patch operation
+    -w --whitelist=<file>       Path to file containing line-separated list of ASG names to match when patching.
+    -b --blacklist=<file>       Path to file containing line-separated list of ASG names to ignore when patching.
+    -k --kill                   Kills a currently running patch operation.
     -d --dry-run                Validate a deployment request without actually performing a deployment.
     -h --host=<host_name>       Environment Manager hostname to override environment variable value.
     -u --user=<user_name>       Username to override environment variable value.

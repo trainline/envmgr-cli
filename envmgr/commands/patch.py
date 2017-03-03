@@ -33,7 +33,9 @@ class Patch(BaseCommand):
     def get_patch_status(self, cluster, env):
         from_ami = self.opts.get('from-ami')
         to_ami = self.opts.get('to-ami')
-        result = self.get_patch_requirements(cluster, env, from_ami, to_ami)
+        whitelist = self.opts.get('whitelist')
+        blacklist = self.opts.get('blacklist')
+        result = self.get_patch_requirements(cluster, env, from_ami, to_ami, whitelist, blacklist)
 
         if not result:
             self.patch_not_required(cluster, env)
@@ -66,7 +68,7 @@ class Patch(BaseCommand):
             
             patch_operation.run(current_operation, cluster, env)
 
-    def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None):
+    def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None, whitelist=None, blacklist=None):
         # We're only interested in Windows as Linux instances auto-update
         self.amis = self.api.get_images()
         self.amis = [ ami for ami in self.amis if ami.get('Platform') == 'Windows' ]
@@ -78,18 +80,20 @@ class Patch(BaseCommand):
             'Ami' in server and server.get('Cluster').lower() == cluster.lower() 
             and server.get('IsBeingDeleted') != True ]
         
-        # Update any non-latest-stable if no "from ami" given
-        if from_ami is not None: 
-            is_out_of_date = lambda ami,server: ami.get('Name') == from_ami
-        else:
-            is_out_of_date = lambda ami,server: not ami.get('IsLatestStable')
-        
         # List of requirements to be considered for updates
         # Prefer 'latest stable' info from image, not server
-        update_requirements = [
-            lambda ami,server: ami.get('Name') == server.get('Ami').get('Name'),
-            is_out_of_date
-        ]
+        update_requirements = [ lambda ami,server: ami.get('Name') == server.get('Ami').get('Name') ]
+        
+        # Update any non-latest-stable if no "from ami" given
+        if from_ami is not None: 
+            update_requirements.append( lambda ami,server: ami.get('Name') == from_ami )
+        else:
+            update_requirements.append( lambda ami,server: not ami.get('IsLatestStable') )
+        if whitelist:
+            update_requirements.append( lambda ami,server: server.get('Name') in whitelist )
+        elif blacklist:
+            update_requirements.append( lambda ami,server: server.get('Name') not in blacklist )
+ 
         # List of servers with Windows AMI that matches update requirement
         servers_to_update = [ server for server in self.servers if 
             any(ami for ami in self.amis if 
@@ -125,7 +129,7 @@ class Patch(BaseCommand):
         to_version = target.get('AmiVersion')
         patch = {
             'server_name': server.get('Name'),
-            'from_ami': from_name,
+            'current_version': from_version,
             'to_ami': target_name,
             'new_ami_id': target.get('ImageId'),
             'server_role': server.get('Role'),
