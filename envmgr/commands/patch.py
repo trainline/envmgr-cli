@@ -18,10 +18,17 @@ class Patch(BaseCommand):
 
     def run(self):
         if self.cmds.get('get') and self.cmds.get('status'):
-            self.get_patch_status(**self.cli_args)
+            if PatchOperation.is_in_progress(**self.cli_args):
+                self.show_current_status(**self.cli_args)
+            else:
+                self.get_patch_status(**self.cli_args)
         else:
             self.run_patch_update(**self.cli_args)
     
+    def show_current_status(self, cluster, env):
+        patch_status = PatchOperation.get_current_status(cluster, env)
+        print(patch_status)
+
     def get_patch_status(self, cluster, env):
         from_ami = self.opts.get('from-ami')
         to_ami = self.opts.get('to-ami')
@@ -36,27 +43,26 @@ class Patch(BaseCommand):
             self.show_result(result, messages)
 
     def patch_not_required(self, cluster, env):
-        self.show_result({}, 'All {0} Windows servers are up to date in {1}'.format(cluster, env))
+        self.show_result({}, '{0} do not need to patch any Windows servers in {1}'.format(cluster, env))
 
     def run_patch_update(self, cluster, env):
         if env.lower() == 'pr1':
             print('Bulk patching is disabled in production')
             return
 
-        patch_operation = PatchOperation(self.api)
-        
-        if self.opts.get('report', False):
-            patch_operation.get_report(cluster, env)
-        elif self.opts.get('kill', False):
-            patch_operation.kill_current(cluster, env)
+        if self.opts.get('kill', False):
+            PatchOperation.kill(cluster, env)
         else:
-            current_operation = patch_operation.get_existing(cluster, env)
+            patch_operation = PatchOperation(self.api)
+            current_operation = PatchOperation.get_current(cluster, env)
+            
             if current_operation is None:
                 from_ami = self.opts.get('from-ami')
                 to_ami = self.opts.get('to-ami')
                 current_operation = self.get_patch_requirements(cluster, env, from_ami, to_ami)
                 if not current_operation:
                     return self.patch_not_required(cluster, env)
+            
             patch_operation.run(current_operation, cluster, env)
 
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None):

@@ -1,5 +1,6 @@
 # Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
+import os
 import time
 import datetime
 
@@ -12,8 +13,38 @@ from envmgr.commands.patch_table import patch_table
 from builtins import input
 
 class PatchOperation(object):
+    
     proc = None
     operation = {}
+    
+    @staticmethod
+    def get_current_status(cluster, env):
+        current_operation = PatchOperation.get_current(cluster, env)
+        if current_operation is not None:
+            patches = current_operation.get('patches')
+            return patch_table(patches, PatchStates.get_friendly_name)
+    
+    @staticmethod
+    def is_in_progress(cluster, env):
+        return PatchOperation.get_current(cluster, env) is not None
+
+    @staticmethod
+    def get_current(cluster, env):
+        return PatchFile.get_contents(cluster, env)
+    
+    @staticmethod
+    def kill(cluster, env):
+        if not PatchOperation.is_in_progress(cluster, env):
+            print('No pending patch operation found for {0} in {1}'.format(cluster, env))
+        else:
+            message = ['', 'This will kill the current patch operation:']
+            message.append(PatchOperation.get_current_status(cluster, env))
+            message.extend(('Scale in/out operations currently in progress will not be affected.', ''))
+            message.append('Are you sure you want to kill this operation? (y/n) ')
+            confirm = input(os.linesep.join(message))
+            if confirm.lower() == 'y':
+                PatchFile.delete(cluster, env)
+                print('Patch operation deleted')
     
     def __init__(self, api):
         self.api = api
@@ -47,43 +78,17 @@ class PatchOperation(object):
             self.proc.set_scale_in_size(set_scale_in)
             self.proc.monitor_scale_in(scaling_in)
             
-            all_complete = all([ patch.get('state') == PatchStates.STATE_COMPLETE for patch in patches ])
-            if all_complete:
+            if all([ patch.get('state') == PatchStates.STATE_COMPLETE for patch in patches ]):
                 self.update_progress()
                 self.progress.finish()
                 PatchFile.delete(self.operation.get('cluster'), self.operation.get('env'))
                 return
             else:
-                time.sleep(10)
-
-    def get_report(self, cluster, env):
-        current_operation = self.get_existing(cluster, env)
-        if current_operation is None:
-            print('No pending patch operation found for {0} in {1}'.format(cluster, env))
-        else:
-            patches = current_operation.get('patches')
-            table_data = patch_table(patches, PatchStates.get_friendly_name)
-            print(table_data)
-            
-    def kill_current(self, cluster, env):
-        current_operation = self.get_existing(cluster, env)
-        if current_operation is None:
-            print('No pending patch operation found for {0} in {1}'.format(cluster, env))
-        else:
-            confirm = input('Are you sure you want to kill this process? (y/n) ')
-            if confirm.lower() == 'y':
-                # self.remove_patch_file(cluster, env)
-                print('Confirmed')
-            else:
-                print('Aborted')
+                time.sleep(10)        
     
     def get_operation(self, patch_item, cluster, env):
         if isinstance(patch_item, list):
             return {'patches':patch_item, 'cluster':cluster, 'env':env, 'start':str(datetime.datetime.utcnow())}
         else:
             return patch_item
-
-    def get_existing(self, cluster, env):
-        return PatchFile.get_contents(cluster, env)
-
 

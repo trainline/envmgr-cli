@@ -18,7 +18,7 @@ Usage:
     envmgr publish <file> as <service> <version> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr toggle <service> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr patch <cluster> in <env> [--from-ami=<old_ami> --to-ami=<new_ami>] [--report] [--kill] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr patch <cluster> in <env> [--from-ami=<old_ami> --to-ami=<new_ami>] [--kill] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr -h | --help
     envmgr --version
 
@@ -26,11 +26,11 @@ Options:
     -r --role=<server_role>     Server role for deploying services in multiple roles.
     -f --from-ami=<old_ami>     The AMI Name to update from.
     -t --to-ami=<new_ami>       The AMI Name to update to.
-    -r --report                 Generate a report of the currently running patch process
+    -k --kill                   Kills a currently running patch operation
+    -d --dry-run                Validate a deployment request without actually performing a deployment.
     -h --host=<host_name>       Environment Manager hostname to override environment variable value.
     -u --user=<user_name>       Username to override environment variable value.
     -p --pass=<password>        Password to overide environment variable value.
-    -d --dry-run                Validate a deployment request without actually performing a deployment.
     -j --json                   Output the raw json response from Environment Manager.
     --help                      Show this screen.
     --version                   Show version.

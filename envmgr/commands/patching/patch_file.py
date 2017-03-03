@@ -26,6 +26,10 @@ class PatchFile(object):
             return None
 
     @staticmethod
+    def exists(cluster, env):
+        return PatchFile.get_contents(cluster, env) is not None
+
+    @staticmethod
     def write_content(cluster, env, content):
         patch_file = PatchFile.get_filepath(cluster, env)
         with open(patch_file, 'w', encoding='utf-8') as f:
