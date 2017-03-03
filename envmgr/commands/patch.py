@@ -115,14 +115,18 @@ class Patch(BaseCommand):
     def create_patch_item(self, server):
         from_name = server.get('Ami').get('Name')
         from_ami = self.get_ami_by_key('Name', from_name)
-        target = self.get_target_ami(from_name)
-        to_name = target.get('Name')
+        target_name = self.opts.get('to-ami')
+        if target_name is not None:
+            target = self.get_ami_by_key('Name', target_name)
+        else:
+            target = self.get_target_ami(from_name)
+            target_name = target.get('Name')
         from_version = from_ami.get('AmiVersion')
         to_version = target.get('AmiVersion')
         patch = {
             'server_name': server.get('Name'),
             'from_ami': from_name,
-            'to_ami': to_name,
+            'to_ami': target_name,
             'new_ami_id': target.get('ImageId'),
             'server_role': server.get('Role'),
             'services_count': len(list(server.get('Services'))),
@@ -158,6 +162,8 @@ class Patch(BaseCommand):
             from_ami = self.get_ami_by_key('Name', from_name)
         if to_name is not None:
             to_ami = self.get_ami_by_key('Name', to_name)
+            if from_name is None:
+                raise ValueError('You must specify --from-ami if --to-ami is given')
         if from_ami is not None and to_ami is not None:
             if from_ami['AmiType'] != to_ami['AmiType']:
                 raise ValueError('AMI types for from_ami and to_ami must match')
