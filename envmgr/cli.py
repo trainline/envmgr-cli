@@ -18,7 +18,7 @@ Usage:
     envmgr publish <file> as <service> <version> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr toggle <service> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr patch <cluster> in <env> [--from-ami=<old_ami> --to-ami=<new_ami>] [--kill] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr patch <cluster> in <env> [--from-ami=<old_ami> --to-ami=<new_ami>] [(--whitelist=<asg>... | --blacklist=<asg>...)] [--kill] [--host=<host_name>] [--user=<user_name> --pass=<password>]
     envmgr -h | --help
     envmgr --version
 
@@ -71,7 +71,7 @@ commands = {
 def except_hook(exec_type, value, trace_back):
     print(value)
 
-#sys.excepthook = except_hook
+sys.excepthook = except_hook
 
 def main():
     """Main CLI entrypoint."""

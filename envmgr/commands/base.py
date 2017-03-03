@@ -5,6 +5,7 @@ import re
 import json
 
 from environment_manager import EMApi
+from envmgr.commands.spinner import Spinner
 
 class BaseCommand(object):
 
@@ -27,6 +28,10 @@ class BaseCommand(object):
                 else:
                     self.cmds[k] = v
         
+        if not self.opts.get('json'):
+            self.spinner = Spinner()
+            self.spinner.start()
+
         host = self.get_config('host', 'ENVMGR_HOST')
         user = self.get_config('user', 'ENVMGR_USER')
         pwrd = self.get_config('pass', 'ENVMGR_PASS')
@@ -34,6 +39,10 @@ class BaseCommand(object):
 
     def run(self):
         raise NotImplementedError('Subclass does not implement run')
+
+    def stop_spinner(self):
+        if not self.opts.get('json'):
+            self.spinner.stop()
 
     def get_config(self, option, env_name):
         value = None
@@ -48,6 +57,7 @@ class BaseCommand(object):
             return value
 
     def show_result(self, result, message):
+        self.stop_spinner()
         if self.opts.get('json'):
             print(json.dumps(result))
         elif isinstance(message, list):

@@ -54,6 +54,7 @@ class Patch(BaseCommand):
             return
 
         if self.opts.get('kill', False):
+            self.stop_spinner()
             PatchOperation.kill(cluster, env)
         else:
             patch_operation = PatchOperation(self.api)
@@ -66,6 +67,7 @@ class Patch(BaseCommand):
                 if not current_operation:
                     return self.patch_not_required(cluster, env)
             
+            self.stop_spinner()
             patch_operation.run(current_operation, cluster, env)
 
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None, whitelist=None, blacklist=None):
