@@ -26,8 +26,9 @@ class Patch(BaseCommand):
             self.run_patch_update(**self.cli_args)
     
     def show_current_status(self, cluster, env):
+        patch_operation = PatchOperation.get_current(cluster, env)
         patch_status = PatchOperation.get_current_status(cluster, env)
-        print(patch_status)
+        self.show_result(patch_operation, patch_status)
 
     def get_patch_status(self, cluster, env):
         from_ami = self.opts.get('from-ami')
