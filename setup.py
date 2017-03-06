@@ -33,6 +33,7 @@ setup(
         'future',
         'semver',
         'appdirs',
+        'progressbar2',
         'environment_manager==0.1.2'
     ],
     setup_requires = pytest_runner,
