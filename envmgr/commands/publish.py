@@ -25,9 +25,9 @@ class Publish(BaseCommand):
             headers = {'content-type':'application/zip'}
             r = requests.put(upload_url, data=payload, headers=headers)
             if int(str(r.status_code)[:1]) == 2:
-                print("{0} v{1} published ({2})".format(service,version,file_size))
+                self.show_result({}, "{0} v{1} published ({2})".format(service,version,file_size))
             else:
-                print("Error")
+                self.show_result({}, "Error")
 
     def convert_size(self, size_bytes):
         if (size_bytes == 0):

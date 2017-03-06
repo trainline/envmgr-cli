@@ -17,11 +17,11 @@ class Spinner(object):
         self.spin_thread.start()
 
     def stop(self):
-        sys.stdout.write('\r ')
-        sys.stdout.flush()
         self.stop_running.set()
         self.spin_thread.join()
-
+        sys.stdout.write('\r ')
+        sys.stdout.flush()
+    
     def init_spin(self):
         while not self.stop_running.is_set():
             sys.stdout.write(self.spinner_cycle.next())

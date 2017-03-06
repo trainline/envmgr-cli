@@ -9,6 +9,7 @@ import atexit
 from envmgr.commands.base import BaseCommand
 from envmgr.commands.patching.patch_operation import PatchOperation
 from envmgr.commands.patching.patch_table import patch_table
+from envmgr.commands.user_confirmation import confirm
 from math import ceil
 from repoze.lru import lru_cache
 
@@ -40,10 +41,13 @@ class Patch(BaseCommand):
         if not result:
             self.patch_not_required(cluster, env)
         else:
-            get_status = lambda p: 'WARNING' if p.get('Warning') is not None else ''
-            table_data = patch_table(result, get_status)
+            table_data = self.format_patch_table(result)
             messages = ['', 'The following patch operations are required:', table_data]
             self.show_result(result, messages)
+
+    def format_patch_table(self, patches):
+        get_status = lambda p: 'WARNING' if p.get('Warning') is not None else ''
+        return patch_table(patches, get_status)
 
     def patch_not_required(self, cluster, env):
         self.show_result({}, '{0} do not need to patch any Windows servers in {1}'.format(cluster, env))
@@ -65,11 +69,22 @@ class Patch(BaseCommand):
                 from_ami = self.opts.get('from-ami')
                 to_ami = self.opts.get('to-ami')
                 current_operation = self.get_patch_requirements(cluster, env, from_ami, to_ami)
+                self.stop_spinner()
                 if not current_operation:
                     return self.patch_not_required(cluster, env)
+                if not self.confirm_patch(current_operation):
+                    print('Patch aborted')
+                    return
+                else:
+                    print('')
             
-            self.stop_spinner()
             patch_operation.run(current_operation, cluster, env)
+
+    def confirm_patch(self, patches):
+        message = ['', 'The following servers will be patched:']
+        message.append(self.format_patch_table(patches))
+        message.append('Do you want to continue? (y/n) ')
+        return confirm(message)
 
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None, whitelist=None, blacklist=None):
         # We're only interested in Windows as Linux instances auto-update

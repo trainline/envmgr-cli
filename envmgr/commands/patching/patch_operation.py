@@ -9,7 +9,9 @@ from envmgr.commands.patching.patch_process import PatchProcess
 from envmgr.commands.patching.patch_states import PatchStates
 from envmgr.commands.patching.patch_file import PatchFile
 from envmgr.commands.patching.patch_progress import PatchProgress
-from envmgr.commands.patch_table import patch_table
+from envmgr.commands.patching.patch_table import patch_table
+from envmgr.commands.user_confirmation import confirm
+
 from builtins import input
 
 class PatchOperation(object):
@@ -32,6 +34,7 @@ class PatchOperation(object):
     def get_current(cluster, env):
         return PatchFile.get_contents(cluster, env)
     
+
     @staticmethod
     def kill(cluster, env):
         if not PatchOperation.is_in_progress(cluster, env):
@@ -41,8 +44,7 @@ class PatchOperation(object):
             message.append(PatchOperation.get_current_status(cluster, env))
             message.extend(('Scale in/out operations currently in progress will not be affected.', ''))
             message.append('Are you sure you want to kill this operation? (y/n) ')
-            confirm = input(os.linesep.join(message))
-            if confirm.lower() == 'y':
+            if confirm(message):
                 PatchFile.delete(cluster, env)
                 print('Patch operation deleted')
     
