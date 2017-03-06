@@ -155,11 +155,12 @@ class Patch(BaseCommand):
             target = self.get_target_ami(from_name)
             target_name = target.get('Name')
         from_version = from_ami.get('AmiVersion')
-        to_version = target.get('AmiVersion')
+        target_version = target.get('AmiVersion')
         patch = {
             'server_name': server.get('Name'),
             'current_version': from_version,
-            'to_ami': target_name,
+            'target_version': target_version,
+            'ami_type': target.get('AmiType'),
             'new_ami_id': target.get('ImageId'),
             'server_role': server.get('Role'),
             'services_count': len(list(server.get('Services'))),
@@ -167,8 +168,8 @@ class Patch(BaseCommand):
         }
 
         # Warn if target version is older than current verion
-        if semver.compare(to_version, from_version) != 1:
-            patch['Warning'] = 'Target version ({0}) is older than current version ({1})'.format(to_version, from_version)
+        if semver.compare(target_version, from_version) != 1:
+            patch['Warning'] = 'Target version ({0}) is older than current version ({1})'.format(target_version, from_version)
 
         return patch
 
