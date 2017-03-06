@@ -4,7 +4,6 @@ import semver
 import time
 import sys
 import os
-import atexit
 
 from envmgr.commands.base import BaseCommand
 from envmgr.commands.patching.patch_operation import PatchOperation
@@ -34,8 +33,8 @@ class Patch(BaseCommand):
     def get_patch_status(self, cluster, env):
         from_ami = self.opts.get('from-ami')
         to_ami = self.opts.get('to-ami')
-        whitelist = self.opts.get('whitelist')
-        blacklist = self.opts.get('blacklist')
+        whitelist = self.get_user_filter('whitelist', 'match')
+        blacklist = self.get_user_filter('blacklist', 'ignore')
         result = self.get_patch_requirements(cluster, env, from_ami, to_ami, whitelist, blacklist)
 
         if not result:
@@ -44,6 +43,18 @@ class Patch(BaseCommand):
             table_data = self.format_patch_table(result)
             messages = ['', 'The following patch operations are required:', table_data]
             self.show_result(result, messages)
+
+    def get_user_filter(self, filename, argname):
+        argvalue = self.opts.get(argname)
+        filter_file = self.opts.get(filename)
+        if len(argvalue):
+            return argvalue
+        elif filter_file is not None:
+            print('get {0}').format(filter_file)
+            filepath = os.path.abspath(filter_file)
+            with open(filepath) as f:
+                filter_list = f.readlines()
+            return [x.strip() for x in filter_list]
 
     def format_patch_table(self, patches):
         get_status = lambda p: 'WARNING' if p.get('Warning') is not None else ''

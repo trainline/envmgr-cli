@@ -4,38 +4,94 @@
 envmgr
 
 Usage:
-    envmgr get <service> health in <env> [<slice>] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr get <service> (active|inactive) slice in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr get asg <name> status in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr get asg <name> health in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr get asg <name> schedule in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr get deploy status <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr get <cluster> patch status in <env> [--from-ami=<old_ami> --to-ami=<new_ami>] [(--whitelist=<asg>... | --blacklist=<asg>...)] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr wait-for deploy <deploy_id> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr wait-for healthy <service> in <env> [<slice>] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr wait-for asg <name> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr publish <file> as <service> <version> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr deploy <service> <version> in <env> [<slice>] [--role=<server_role>] [--dry-run] [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr toggle <service> in <env> [--json] [--host=<host_name>] [--user=<user_name> --pass=<password>]
-    envmgr patch <cluster> in <env> [--from-ami=<old_ami> --to-ami=<new_ami>] [(--whitelist=<asg>... | --blacklist=<asg>...)] [--kill] [--host=<host_name>] [--user=<user_name> --pass=<password>]
+    envmgr get <service> health in <env> 
+        [<slice>] 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr get <service> (active|inactive) slice in <env> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr get asg <name> status in <env> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr get asg <name> health in <env> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr get asg <name> schedule in <env> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr get deploy status <deploy_id> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr get <cluster> patch status in <env> 
+        [--from-ami=<old_ami> --to-ami=<new_ami>] 
+        [(--match=<asg>... | --ignore=<asg>... | --whitelist=<file> | --blacklist=<file>)] 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr wait-for deploy <deploy_id> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr wait-for healthy <service> in <env> 
+        [<slice>] 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr wait-for asg <name> in <env> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr publish <file> as <service> <version> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr deploy <service> <version> in <env> 
+        [<slice>] 
+        [--role=<server_role>] 
+        [--dry-run] 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr toggle <service> in <env> 
+        [--json] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+    envmgr patch <cluster> in <env> 
+        [--from-ami=<old_ami> --to-ami=<new_ami>] 
+        [(--match=<asg>... | --ignore=<asg>... | --whitelist=<file> | --blacklist=<file>)] 
+        [--kill] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
     envmgr -h | --help
     envmgr --version
 
 Options:
-    -r --role=<server_role>     Server role for deploying services in multiple roles.
-    -f --from-ami=<old_ami>     The AMI Name to update from.
-    -t --to-ami=<new_ami>       The AMI Name to update to.
-    -w --whitelist=<file>       Path to file containing line-separated list of ASG names to match when patching.
-    -b --blacklist=<file>       Path to file containing line-separated list of ASG names to ignore when patching.
-    -k --kill                   Kills a currently running patch operation.
-    -d --dry-run                Validate a deployment request without actually performing a deployment.
-    -h --host=<host_name>       Environment Manager hostname to override environment variable value.
-    -u --user=<user_name>       Username to override environment variable value.
-    -p --pass=<password>        Password to overide environment variable value.
-    -j --json                   Output the raw json response from Environment Manager.
-    --help                      Show this screen.
-    --version                   Show version.
+    -r --role=<server_role>         Server role for deploying services in multiple roles.
+    -f --from-ami=<old_ami>         The AMI Name to update from.
+    -t --to-ami=<new_ami>           The AMI Name to update to.
+    -m --match=<asg>                Name of an ASG to match when patching (multiple allowed)
+    -i --ignore=<asg>               Name of an ASG to ignore when patching (multiple allowed)
+    -w --whitelist=<file>           Path to file containing line-separated list of ASG names to match when patching.
+    -b --blacklist=<file>           Path to file containing line-separated list of ASG names to ignore when patching.
+    -k --kill                       Kills a currently running patch operation.
+    -d --dry-run                    Validate a deployment request without actually performing a deployment.
+    -h --host=<host_name>           Environment Manager hostname to override environment variable value.
+    -u --user=<user_name>           Username to override environment variable value.
+    -p --pass=<password>            Password to overide environment variable value.
+    -j --json                       Output the raw json response from Environment Manager.
+    --help                          Show this screen.
+    --version                       Show version.
 
 Examples:
     envmgr get MyService health in prod-1
