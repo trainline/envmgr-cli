@@ -13,7 +13,7 @@ class PatchFile(object):
     def get_filepath(cluster, env):
         app_dir = user_data_dir('envmgr', 'trainline')
         filename = 'patch_{0}_{1}'.format(cluster.lower(), env.lower())
-        filename = '{0}.json'.format(sha1(filename).hexdigest())
+        filename = '{0}.json'.format(sha1(filename.encode('utf-8')).hexdigest())
         return os.path.join(app_dir, filename)
 
     @staticmethod

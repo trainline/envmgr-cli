@@ -24,7 +24,7 @@ class Spinner(object):
     
     def init_spin(self):
         while not self.stop_running.is_set():
-            sys.stdout.write(self.spinner_cycle.next())
+            sys.stdout.write(next(self.spinner_cycle))
             sys.stdout.flush()
             time.sleep(0.2)
             sys.stdout.write('\b')
