@@ -60,8 +60,9 @@ class PatchOperation(object):
             message.extend(('Scale in/out operations currently in progress will not be affected.', ''))
             message.append('Are you sure you want to kill this operation? (y/n) ')
             if confirm(message):
+                report = PatchFile.write_report(cluster, env)
                 PatchFile.delete(cluster, env)
-                print('Patch operation deleted')
+                print('Patch operation deleted. Status report written to {0}'.format(report))
     
     def __init__(self, api):
         self.api = api

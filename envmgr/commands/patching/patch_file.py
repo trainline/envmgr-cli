@@ -1,7 +1,7 @@
 # Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 import json
-import os.path
+import os
 
 from codecs import open
 from hashlib import sha1
@@ -36,5 +36,14 @@ class PatchFile(object):
             f.write(unicode(json.dumps(content, ensure_ascii=False)))
     
     @staticmethod
+    def write_report(cluster, env):
+        content = PatchFile.get_contents(cluster, env)
+        filepath = os.path.join(os.getcwd(), 'patch_report_{0}_{1}.json'.format(cluster, env))
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(unicode(json.dumps(content, ensure_ascii=False)))
+        return filepath
+
+    @staticmethod
     def delete(cluster, env):
         os.remove(PatchFile.get_filepath(cluster, env))
+
