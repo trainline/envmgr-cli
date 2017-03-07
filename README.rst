@@ -182,7 +182,7 @@ Export your hostname as an environment variable:
 
 ::
 
-    ENVMGR_HOST=environmentmanager.corp.local
+    ENVMGR_HOST=environmentmanager.acme.com
 
 Or provide the hostname with each command:
 
