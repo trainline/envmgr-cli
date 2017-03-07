@@ -27,10 +27,6 @@ class BaseCommand(object):
                     self.opts[cli_opt.group(1)] = v
                 else:
                     self.cmds[k] = v
-        
-        if not self.opts.get('json'):
-            self.spinner = Spinner()
-            self.spinner.start()
 
         host = self.get_config('host', 'ENVMGR_HOST')
         user = self.get_config('user', 'ENVMGR_USER')
@@ -39,6 +35,11 @@ class BaseCommand(object):
 
     def run(self):
         raise NotImplementedError('Subclass does not implement run')
+
+    def show_activity(self):
+        if not self.opts.get('json'):
+            self.spinner = Spinner()
+            self.spinner.start()
 
     def stop_spinner(self):
         if not self.opts.get('json'):

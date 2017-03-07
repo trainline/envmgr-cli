@@ -5,6 +5,7 @@ from envmgr.commands.base import BaseCommand
 class Toggle(BaseCommand):
 
     def run(self):
+        self.show_activity()
         self.toggle_service_slices(**self.cli_args)
 
     def toggle_service_slices(self, service, env):

@@ -8,6 +8,7 @@ from envmgr.commands.base import BaseCommand
 class Deploy(BaseCommand):
 
     def run(self):
+        self.show_activity()
         if self.cmds.get("wait-for"):
             self.wait_for_deployment(**self.cli_args)
         elif self.cmds.get("status"):

@@ -10,6 +10,7 @@ from envmgr.commands.base import BaseCommand
 class Publish(BaseCommand):
 
     def run(self):
+        self.show_activity()
         self.publish_service_file(**self.cli_args)
 
     def publish_service_file(self, service, version, file):

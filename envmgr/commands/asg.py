@@ -6,7 +6,8 @@ from envmgr.commands.base import BaseCommand
 
 class ASG(BaseCommand):
 
-    def run(self):
+    def run(self):	
+        self.show_activity()
         if self.cmds.get('schedule'):
             if self.cmds.get('get'):
                 self.describe_schedule(**self.cli_args)

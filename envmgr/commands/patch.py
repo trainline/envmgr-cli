@@ -17,6 +17,7 @@ class Patch(BaseCommand):
     servers = []
 
     def run(self):
+        self.show_activity()
         if self.cmds.get('get') and self.cmds.get('status'):
             if PatchOperation.is_in_progress(**self.cli_args):
                 self.show_current_status(**self.cli_args)

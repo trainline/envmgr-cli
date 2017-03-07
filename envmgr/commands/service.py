@@ -9,6 +9,7 @@ from envmgr.commands.base import BaseCommand
 class Service(BaseCommand):
 
     def run(self):
+        self.show_activity()
         if self.cmds.get('healthy'):
             self.wait_for_healthy_service(**self.cli_args)
         elif self.cmds.get('health'):
