@@ -6,6 +6,7 @@ import sys
 import os
 
 from envmgr.commands.base import BaseCommand
+from envmgr.commands.asg import ASG
 from envmgr.commands.patching.patch_operation import PatchOperation
 from envmgr.commands.patching.patch_table import patch_table
 from envmgr.commands.user_confirmation import confirm
@@ -36,12 +37,12 @@ class Patch(BaseCommand):
         to_ami = self.opts.get('to-ami')
         whitelist = self.get_user_filter('whitelist', 'match')
         blacklist = self.get_user_filter('blacklist', 'ignore')
-        result = self.get_patch_requirements(cluster, env, from_ami, to_ami, whitelist, blacklist)
+        result = self.get_patch_requirements(cluster, env, from_ami, to_ami, whitelist, blacklist)[0]
 
         if not result:
             self.patch_not_required(cluster, env)
         else:
-            table_data = self.format_patch_table(result)
+            table_data = patch_table(result)
             messages = ['', 'The following patch operations are required:', table_data]
             self.show_result(result, messages)
 
@@ -51,15 +52,10 @@ class Patch(BaseCommand):
         if len(argvalue):
             return argvalue
         elif filter_file is not None:
-            print('get {0}').format(filter_file)
             filepath = os.path.abspath(filter_file)
             with open(filepath) as f:
                 filter_list = f.readlines()
             return [x.strip() for x in filter_list]
-
-    def format_patch_table(self, patches):
-        get_status = lambda p: 'WARNING' if p.get('Warning') is not None else ''
-        return patch_table(patches, get_status)
 
     def patch_not_required(self, cluster, env):
         self.show_result({}, '{0} do not need to patch any Windows servers in {1}'.format(cluster, env))
@@ -80,7 +76,7 @@ class Patch(BaseCommand):
             if current_operation is None:
                 from_ami = self.opts.get('from-ami')
                 to_ami = self.opts.get('to-ami')
-                current_operation = self.get_patch_requirements(cluster, env, from_ami, to_ami)
+                current_operation = self.get_patch_requirements(cluster, env, from_ami, to_ami)[0]
                 self.stop_spinner()
                 if not current_operation:
                     return self.patch_not_required(cluster, env)
@@ -94,7 +90,7 @@ class Patch(BaseCommand):
 
     def confirm_patch(self, patches):
         message = ['', 'The following servers will be patched:']
-        message.append(self.format_patch_table(patches))
+        message.append(patch_table(patches))
         message.append('Do you want to continue? (y/n) ')
         return confirm(message)
 
@@ -132,12 +128,18 @@ class Patch(BaseCommand):
         ]
         # List of patches to apply
         patches = list(map(self.create_patch_item, servers_to_update))
-        self.assign_scale_requirements(patches, env)
-        return patches
+        self.get_asg_details(patches, env)
 
-    def assign_scale_requirements(self, patches, env):
+        patches_to_run = [ patch for patch in patches if not patch.get('has_standby_instances') and not patch.get('unhealthy') ]
+        patches_to_ignore = [ patch for patch in patches if patch.get('has_standby_instances') or patch.get('unhealthy') ]
+        
+        return (patches_to_run, patches_to_ignore)
+
+    def get_asg_details(self, patches, env):
         for p in patches:
-            asg = self.api.get_asg(env, p.get('server_name'))
+            asg_name = p.get('server_name')
+            asg = self.api.get_asg(env, asg_name)
+            # Calculate required scale out size
             n_azs = len(list(asg.get('AvailabilityZones')))
             n_instances = p.get('instances_count')
             scale_up_count = n_instances * 2
@@ -146,6 +148,12 @@ class Patch(BaseCommand):
             p['az_count'] = n_azs
             p['scale_up_count'] = scale_up_count
             p['max_count'] = asg.get('MaxSize', n_instances)
+            # Check for any instances in standby
+            if any([ instance for instance in asg.get('Instances', []) if instance.get('LifecycleState') == 'Standby' ]):
+                p['has_standby_instances'] = True
+            # Check for overall health
+            if not ASG({}).get_health(env, asg_name).get('is_healthy'):
+                p['unhealthy'] = True
 
     def create_patch_item(self, server):
         from_name = server.get('Ami').get('Name')
@@ -168,10 +176,9 @@ class Patch(BaseCommand):
             'services_count': len(list(server.get('Services'))),
             'instances_count': server.get('Size').get('Current')
         }
-
         # Warn if target version is older than current verion
         if semver.compare(target_version, from_version) != 1:
-            patch['Warning'] = 'Target version ({0}) is older than current version ({1})'.format(target_version, from_version)
+            patch['Warning'] = True
 
         return patch
 

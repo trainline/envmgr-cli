@@ -15,6 +15,7 @@ class BaseCommand(object):
         self.opts = {}
         self.cli_args = {}
         self.cmds = {}
+        self.spinner = None
 
         for (k, v) in options.items():
             if v is not None:
@@ -42,7 +43,7 @@ class BaseCommand(object):
             self.spinner.start()
 
     def stop_spinner(self):
-        if not self.opts.get('json'):
+        if not self.opts.get('json') and self.spinner is not None:
             self.spinner.stop()
 
     def get_config(self, option, env_name):

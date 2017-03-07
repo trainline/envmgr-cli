@@ -4,7 +4,18 @@ import os
 
 from tabulate import tabulate
 
-def patch_table(patches, get_status):
+
+def get_default_status(p):
+    if p.get('has_standby_instances'):
+        return 'Instances in standby'
+    elif p.get('unhealthy'):
+        return 'Unhealthy'
+    elif p.get('warning'):
+        return 'Warning' 
+    else:
+        return ''
+
+def patch_table(patches, get_status=get_default_status):
     table_data = map(lambda p: {
         0: p.get('server_name'),
         1: p.get('ami_type'),

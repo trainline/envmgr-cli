@@ -101,9 +101,9 @@ class ASG(BaseCommand):
     def get_health(self, env, name):
         asg = self.api.get_environment_asg_servers(env, name)
         service_counts = asg.get('ServicesCount')
-        n_expected = service_counts.get('Expected')        
-        n_unexpected = service_counts.get('Unexpected')
-        n_missing = service_counts.get('Missing')
+        n_expected = service_counts.get('Expected')
+        n_unexpected = service_counts.get('Unexpected', 0)
+        n_missing = service_counts.get('Missing', 0)
         result = {'required_count':n_expected}
 
         if n_missing != 0:

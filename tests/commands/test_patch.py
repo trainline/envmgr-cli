@@ -25,6 +25,9 @@ class PatchTest(APITestCase):
 
         servers_in_env = []
         self.mock_response(r'/asgs/[\w\.\-]+', {'AvailabilityZones':[1]})
+        self.mock_response(r'/environments/[\w\.\-]+/servers/[\w\.\-]+', 
+                {'ServicesCount':{'Expected':2}, 'Instances':[{'RunningServicesCount':2}]}
+                )
 
         # Create a list of servers in env, based on test scenario
         for server_desc in args:
@@ -39,7 +42,7 @@ class PatchTest(APITestCase):
             'env':'staging',
             'from_ami':from_ami 
         })
-        self.assertEqual(len(list(result)), expected_result)
+        self.assertEqual(len(list(result[0])), expected_result)
     
 
     def respond_with_servers(self, servers):
@@ -56,3 +59,4 @@ class PatchTest(APITestCase):
     def create_servers(self, cluster, n=1, ami='mock-ami-1.0.0', latest=False):
         servers = [ mock_server(cluster, ami, latest) for x in range(n) ]
         return servers
+
