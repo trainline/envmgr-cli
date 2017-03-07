@@ -54,7 +54,8 @@ class PatchProcess(object):
         # Set scale in target size
         for patch in patches:
             size = patch.get('instances_count')
-            data = {'desired':size, 'max':size}
+            max_size = patch.get('max_count')
+            data = {'desired':size, 'max':max_size}
             asg_name = patch.get('server_name')
             update = self.api.put_asg_size(self.env, asg_name, data)
             self.update_patch_status(patch, PatchStates.STATE_SCALE_IN_TARGET_SET)

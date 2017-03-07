@@ -144,6 +144,7 @@ class Patch(BaseCommand):
                 scale_up_count += 1
             p['az_count'] = n_azs
             p['scale_up_count'] = scale_up_count
+            p['max_count'] = asg.get('MaxSize', n_instances)
 
     def create_patch_item(self, server):
         from_name = server.get('Ami').get('Name')
