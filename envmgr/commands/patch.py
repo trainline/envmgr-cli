@@ -37,14 +37,13 @@ class Patch(BaseCommand):
         to_ami = self.opts.get('to-ami')
         whitelist = self.get_user_filter('whitelist', 'match')
         blacklist = self.get_user_filter('blacklist', 'ignore')
-        result = self.get_patch_requirements(cluster, env, from_ami, to_ami, whitelist, blacklist)[0]
+        result = self.get_patch_requirements(cluster, env, from_ami, to_ami, whitelist, blacklist)
 
         if not result:
             self.patch_not_required(cluster, env)
         else:
-            table_data = patch_table(result)
-            messages = ['', 'The following patch operations are required:', table_data]
-            self.show_result(result, messages)
+            message = PatchOperation.describe_patches(result)
+            self.show_result(result, message)
 
     def get_user_filter(self, filename, argname):
         argvalue = self.opts.get(argname)
@@ -76,7 +75,7 @@ class Patch(BaseCommand):
             if current_operation is None:
                 from_ami = self.opts.get('from-ami')
                 to_ami = self.opts.get('to-ami')
-                current_operation = self.get_patch_requirements(cluster, env, from_ami, to_ami)[0]
+                current_operation = self.get_patch_requirements(cluster, env, from_ami, to_ami)
                 self.stop_spinner()
                 if not current_operation:
                     return self.patch_not_required(cluster, env)
@@ -89,8 +88,9 @@ class Patch(BaseCommand):
             patch_operation.run(current_operation, cluster, env)
 
     def confirm_patch(self, patches):
-        message = ['', 'The following servers will be patched:']
-        message.append(patch_table(patches))
+        to_patch = PatchOperation.get_patches_by_availability(patches, True)
+        to_ignore = PatchOperation.get_patches_by_availability(patches, False)
+        message = PatchOperation.describe_patches(to_patch, to_ignore)
         message.append('Do you want to continue? (y/n) ')
         return confirm(message)
 
@@ -129,11 +129,7 @@ class Patch(BaseCommand):
         # List of patches to apply
         patches = list(map(self.create_patch_item, servers_to_update))
         self.get_asg_details(patches, env)
-
-        patches_to_run = [ patch for patch in patches if not patch.get('has_standby_instances') and not patch.get('unhealthy') ]
-        patches_to_ignore = [ patch for patch in patches if patch.get('has_standby_instances') or patch.get('unhealthy') ]
-        
-        return (patches_to_run, patches_to_ignore)
+        return patches
 
     def get_asg_details(self, patches, env):
         for p in patches:
@@ -152,8 +148,9 @@ class Patch(BaseCommand):
             if any([ instance for instance in asg.get('Instances', []) if instance.get('LifecycleState') == 'Standby' ]):
                 p['has_standby_instances'] = True
             # Check for overall health
-            if not ASG({}).get_health(env, asg_name).get('is_healthy'):
-                p['unhealthy'] = True
+            asg_status = ASG({}).get_health(env, asg_name)
+            if not asg_status.get('is_healthy'):
+                p['unhealthy'] = asg_status
 
     def create_patch_item(self, server):
         from_name = server.get('Ami').get('Name')

@@ -3,6 +3,7 @@
 import time
 
 from envmgr.commands.base import BaseCommand
+from envmgr.commands.utils.asg_health import describe_asg_health
 
 class ASG(BaseCommand):
 
@@ -34,23 +35,13 @@ class ASG(BaseCommand):
 
     def describe_health(self, env, name):
         result = self.get_health(env, name)
-        
         if result.get('is_healthy'):
             n_services = result.get('required_count')
             n_instances = result.get('instances_count')
             message = '{0} is healthy ({1} services on {2} instances)'.format(name, n_services, n_instances)
         else:
-            if result.get('required_count') == 0: 
-                message = '{0} is in an unknown state (no expected services)'.format(name)
-            elif result.get('missing_count') is not None:
-                message = '{0} is not healthy ({1} missing services)'.format(name, result.get('missing_count'))
-            elif result.get('unexpected_count') is not None:
-                message = '{0} is not healthy ({1} unexpected services)'.format(name, result.get('unexpected_count'))
-            elif result.get('instances_count') == 0:
-                message = '{0} is not healthy (no instances)'.format(name)
-            else:
-                message = '{0} is not healthy ({1} instances unhealthy or not ready)'.format(name, result.get('unhealthy_count'))
-
+            health = describe_asg_health(result)
+            message = '{0} is not healthy: {1}'.format(name, health)
         self.show_result(result, message)
 
     def get_schedule(self, env, name):

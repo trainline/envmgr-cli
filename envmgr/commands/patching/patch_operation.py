@@ -34,6 +34,21 @@ class PatchOperation(object):
     def get_current(cluster, env):
         return PatchFile.get_contents(cluster, env)
     
+    @staticmethod
+    def get_patches_by_availability(patches, available):
+        if available:
+            return [ patch for patch in patches if not patch.get('has_standby_instances') and not patch.get('unhealthy') ]
+        else:
+            return [ patch for patch in patches if patch.get('has_standby_instances') or patch.get('unhealthy') ]
+
+    @staticmethod
+    def describe_patches(to_run, to_ignore=None):
+        description = ['']
+        if to_run:
+            description.extend(('The following patch operations are required:', patch_table(to_run), ''))
+        if to_ignore:
+            description.extend(('The following patches cannot be run at this time and will be ignored:', patch_table(to_ignore), ''))
+        return description
 
     @staticmethod
     def kill(cluster, env):
@@ -89,7 +104,8 @@ class PatchOperation(object):
     
     def get_operation(self, patch_item, cluster, env):
         if isinstance(patch_item, list):
-            return {'patches':patch_item, 'cluster':cluster, 'env':env, 'start':str(datetime.datetime.utcnow())}
+            patches = PatchOperation.get_patches_by_availability(patch_item, True)
+            return {'patches':patches, 'cluster':cluster, 'env':env, 'start':str(datetime.datetime.utcnow())}
         else:
             return patch_item
 

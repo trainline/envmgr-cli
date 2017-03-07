@@ -2,14 +2,15 @@
 
 import os
 
-from tabulate import tabulate
 
+from envmgr.commands.utils.asg_health import describe_asg_health
+from tabulate import tabulate
 
 def get_default_status(p):
     if p.get('has_standby_instances'):
         return 'Instances in standby'
-    elif p.get('unhealthy'):
-        return 'Unhealthy'
+    elif p.get('unhealthy') is not None:
+        return describe_asg_health(p.get('unhealthy'))
     elif p.get('warning'):
         return 'Warning' 
     else:
