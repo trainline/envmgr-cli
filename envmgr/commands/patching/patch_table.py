@@ -2,7 +2,6 @@
 
 import os
 
-
 from envmgr.commands.utils.asg_health import describe_asg_health
 from tabulate import tabulate
 
@@ -29,3 +28,4 @@ def patch_table(patches, get_status=get_default_status):
     
     headers = {0:'ASG', 1:'AMI Type', 2:'Current', 3:'Target', 4:'Instances', 5:'Scale out', 6:'Status'}
     return os.linesep + tabulate(table_data, headers, tablefmt="simple") + os.linesep
+

@@ -39,13 +39,25 @@ class PatchProcess(object):
         if not patches:
             return
         def has_scaled_out(patch):
-            asg = ASG({})
-            status = asg.get_health(self.env, patch.get('server_name'))
-            return status['is_healthy'] and status['instances_count'] == patch.get('scale_up_count')
-        # Check if ASGs have finished scaling out 
+            result = self.api.get_asg_ready(self.env, patch.get('server_name'))
+            return result.get('ReadyToDeploy') is True
+
         scaled_out_asgs = [ patch for patch in patches if has_scaled_out(patch) ]
         for patch in scaled_out_asgs:
             self.update_patch_status(patch, PatchStates.STATE_SCALED_OUT, False)
+        self.write_to_file()
+
+    def monitor_service_installation(self, patches):
+        if not patches:
+            return
+        def services_installed(patch):
+            asg = ASG({})
+            status = asg.get_health(self.env, patch.get('server_name'))
+            return status['is_healthy'] and status['instances_count'] == patch.get('scale_up_count')
+        # Check if ASGs have installed all services
+        ready_asgs = [ patch for patch in patches if services_installed(patch) ]
+        for patch in ready_asgs:
+            self.update_patch_status(patch, PatchStates.STATE_SERVICES_INSTALLED, False)
         self.write_to_file()
 
     def set_scale_in_size(self, patches):

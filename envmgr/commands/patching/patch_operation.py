@@ -74,7 +74,7 @@ class PatchOperation(object):
         self.operation = self.get_operation(patch_operation, cluster, env)
         self.proc = PatchProcess(self.api, self.operation)
         self.progress = PatchProgress()
-        self.progress.start()
+        self.progress.start(self.operation.get('start'))
         self.check_status()
 
     def check_status(self):
@@ -84,14 +84,16 @@ class PatchOperation(object):
             update_lc = self.get_patches_by_state(None)
             set_scale_out = self.get_patches_by_state(PatchStates.STATE_LC_UPDATED)
             scaling_out = self.get_patches_by_state(PatchStates.STATE_SCALE_OUT_TARGET_SET)
-            set_scale_in = self.get_patches_by_state(PatchStates.STATE_SCALED_OUT)
+            installing_services = self.get_patches_by_state(PatchStates.STATE_SCALED_OUT)
+            set_scale_in = self.get_patches_by_state(PatchStates.STATE_SERVICES_INSTALLED)
             scaling_in = self.get_patches_by_state(PatchStates.STATE_SCALE_IN_TARGET_SET)
             complete = self.get_patches_by_state(PatchStates.STATE_COMPLETE)
 
-            self.progress.update(*map(len, [patches, set_scale_out, scaling_out, set_scale_in, scaling_in, complete]))
+            self.progress.update(*map(len, [patches, set_scale_out, scaling_out, installing_services, set_scale_in, scaling_in, complete]))
             self.proc.update_launch_configs(update_lc)
             self.proc.set_scale_out_size(set_scale_out)
             self.proc.monitor_scale_out(scaling_out)
+            self.proc.monitor_service_installation(installing_services)
             self.proc.set_scale_in_size(set_scale_in)
             self.proc.monitor_scale_in(scaling_in)
             
@@ -105,7 +107,7 @@ class PatchOperation(object):
     def get_operation(self, patch_item, cluster, env):
         if isinstance(patch_item, list):
             patches = PatchOperation.get_patches_by_availability(patch_item, True)
-            return {'patches':patches, 'cluster':cluster, 'env':env, 'start':str(datetime.datetime.utcnow())}
+            return {'patches':patches, 'cluster':cluster, 'env':env, 'start':str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f"))}
         else:
             return patch_item
 
