@@ -3,11 +3,21 @@
 import os
 import re
 import json
+import sys
+import platform
 
 from environment_manager import EMApi
 from envmgr.commands.spinner import Spinner
+from envmgr import __version__ as VERSION
 
 class BaseCommand(object):
+
+    @staticmethod
+    def get_user_agent():
+        system = platform.system()
+        machine = platform.machine()
+        python_v = '.'.join(map(str, (sys.version_info)[:3]))
+        return 'envmgr-cli/{0} ({1} {2}) Python/{3}'.format(VERSION, system, machine, python_v)
 
     def __init__(self, options, *args, **kwargs):
         self.args = args
@@ -32,7 +42,8 @@ class BaseCommand(object):
         host = self.get_config('host', 'ENVMGR_HOST')
         user = self.get_config('user', 'ENVMGR_USER')
         pwrd = self.get_config('pass', 'ENVMGR_PASS')
-        self.api = EMApi(server=host, user=user, password=pwrd, retries=1)
+        headers = {'User-Agent':BaseCommand.get_user_agent()}
+        self.api = EMApi(server=host, user=user, password=pwrd, retries=1, default_headers=headers)
 
     def run(self):
         raise NotImplementedError('Subclass does not implement run')
