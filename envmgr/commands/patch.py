@@ -60,9 +60,10 @@ class Patch(BaseCommand):
         self.show_result({}, '{0} do not need to patch any Windows servers in {1}'.format(cluster, env))
 
     def run_patch_update(self, cluster, env):
-        if env.lower() == 'pr1':
+        env = env.lower()
+        if self.environment_is_protected(env):
             self.stop_spinner()
-            print('Bulk patching is disabled in production')
+            print('Bulk patching is temporarily disabled in {0}'.format(env))
             return
 
         if self.opts.get('kill', False):
@@ -130,6 +131,10 @@ class Patch(BaseCommand):
         patches = list(map(self.create_patch_item, servers_to_update))
         self.get_asg_details(patches, env)
         return patches
+
+    def environment_is_protected(self, env):
+        result = self.api.get_environment_protected(env, 'BULK_PATCH_AMI')
+        return result.get('isProtected', False)
 
     def get_asg_details(self, patches, env):
         for p in patches:
