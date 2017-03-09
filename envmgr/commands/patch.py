@@ -81,7 +81,6 @@ class Patch(BaseCommand):
                 if not current_operation:
                     return self.patch_not_required(cluster, env)
                 if not self.confirm_patch(current_operation):
-                    print('Patch aborted')
                     return
                 else:
                     print('')
@@ -92,8 +91,12 @@ class Patch(BaseCommand):
         to_patch = PatchOperation.get_patches_by_availability(patches, True)
         to_ignore = PatchOperation.get_patches_by_availability(patches, False)
         message = PatchOperation.describe_patches(to_patch, to_ignore)
-        message.append('Do you want to continue? (y/n) ')
-        return confirm(message)
+        if not to_patch:
+            self.show_result({}, message)
+            return False
+        else:
+            message.append('Do you want to continue? (y/n) ')
+            return confirm(message)
 
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None, whitelist=None, blacklist=None):
         # We're only interested in Windows as Linux instances auto-update
