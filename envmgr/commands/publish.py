@@ -20,7 +20,11 @@ class Publish(BaseCommand):
             return
 
         file_size = self.convert_size(os.path.getsize(file_path))
-        upload_url = self.api.get_package_upload_url(service, version)
+        package_path = self.api.get_package_upload_url(service, version)
+        if isinstance(package_path, dict):
+            upload_url = package_path.get('url')
+        else:
+            upload_url = package_path
 
         with open(file_path,'rb') as payload:
             headers = {'content-type':'application/zip'}
