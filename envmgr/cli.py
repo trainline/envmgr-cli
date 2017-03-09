@@ -73,6 +73,7 @@ Usage:
         [--kill] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+    envmgr verify
     envmgr -h | --help
     envmgr --version
 
@@ -113,7 +114,7 @@ import sys
 from inspect import getmembers, isclass
 from docopt import docopt
 from . import __version__ as VERSION
-from envmgr.commands import ASG, Deploy, Patch, Publish, Service, Toggle
+from envmgr.commands import ASG, Deploy, Patch, Publish, Service, Toggle, Verify
 
 commands = {
     'asg':ASG,
@@ -121,7 +122,8 @@ commands = {
     'patch':Patch,
     'publish':Publish,
     'service':Service,
-    'toggle':Toggle
+    'toggle':Toggle,
+    'verify':Verify
 }
 
 def except_hook(exec_type, value, trace_back):
@@ -132,7 +134,7 @@ sys.excepthook = except_hook
 def main():
     """Main CLI entrypoint."""
     options = docopt(__doc__, version=VERSION)
-    priority_order = ["asg", "deploy", "patch", "toggle", "publish", "service"]
+    priority_order = ["asg", "deploy", "patch", "toggle", "publish", "verify", "service"]
     cmd_opts = options.copy()
     
     if cmd_opts["<service>"] is not None:
