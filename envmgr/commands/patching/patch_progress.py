@@ -63,7 +63,7 @@ class PatchProgress(object):
     def init_progress(self):
         while not self.stop_running.is_set():
             p = self.total_progress
-            if math.isnan(p) or p is None:
+            if math.isnan(p) or p is None or p == 0:
                 p = 1
             t = datetime.datetime.utcnow()
             s = (t - self.start_time).total_seconds()
