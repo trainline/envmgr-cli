@@ -76,7 +76,9 @@ class Patch(BaseCommand):
             if current_operation is None:
                 from_ami = self.opts.get('from-ami')
                 to_ami = self.opts.get('to-ami')
-                current_operation = self.get_patch_requirements(cluster, env, from_ami, to_ami)
+                whitelist = self.get_user_filter('whitelist', 'match')
+                blacklist = self.get_user_filter('blacklist', 'ignore')
+                current_operation = self.get_patch_requirements(cluster, env, from_ami, to_ami, whitelist, blacklist)
                 self.stop_spinner()
                 if not current_operation:
                     return self.patch_not_required(cluster, env)
