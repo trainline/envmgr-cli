@@ -2,6 +2,7 @@
 
 import json
 import os
+import errno
 
 from codecs import open
 from hashlib import sha1
@@ -31,15 +32,25 @@ class PatchFile(object):
 
     @staticmethod
     def write_content(cluster, env, content):
-        patch_file = PatchFile.get_filepath(cluster, env)
-        with open(patch_file, 'w', encoding='utf-8') as f:
+        filepath = PatchFile.get_filepath(cluster, env)
+        with PatchFile.safe_open_w(filepath) as f:
             f.write(unicode(json.dumps(content, ensure_ascii=False)))
     
+    @staticmethod
+    def safe_open_w(filepath):
+        path = os.path.dirname(filepath)
+        try:
+            os.makedirs(path)
+        except OSError as exc:
+            if exc.errno == errno.EEXIST and os.path.isdir(path): pass
+            else: raise
+        return open(filepath, 'w', encoding='utf-8')
+
     @staticmethod
     def write_report(cluster, env):
         content = PatchFile.get_contents(cluster, env)
         filepath = os.path.join(os.getcwd(), 'patch_report_{0}_{1}.json'.format(cluster, env))
-        with open(filepath, 'w', encoding='utf-8') as f:
+        with PatchFile.safe_open_w(filepath) as f:
             f.write(unicode(json.dumps(content, ensure_ascii=False)))
         return filepath
 
