@@ -4,6 +4,7 @@ import json
 import os
 import errno
 
+from builtins import str
 from codecs import open
 from hashlib import sha1
 from appdirs import user_data_dir
@@ -35,7 +36,7 @@ class PatchFile(object):
     def write_content(cluster, env, content):
         filepath = PatchFile.get_filepath(cluster, env)
         with PatchFile.safe_open_w(filepath) as f:
-            f.write(unicode(json.dumps(content, ensure_ascii=False)))
+            f.write(str(json.dumps(content, ensure_ascii=False)))
     
     @staticmethod
     def safe_open_w(filepath):
@@ -47,7 +48,7 @@ class PatchFile(object):
         content = PatchFile.get_contents(cluster, env)
         filepath = os.path.join(os.getcwd(), 'patch_report_{0}_{1}.json'.format(cluster, env))
         with PatchFile.safe_open_w(filepath) as f:
-            f.write(unicode(json.dumps(content, ensure_ascii=False)))
+            f.write(str(json.dumps(content, ensure_ascii=False)))
         return filepath
 
     @staticmethod

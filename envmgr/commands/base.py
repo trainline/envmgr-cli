@@ -7,6 +7,7 @@ import sys
 import platform
 import logging
 
+from future.utils import viewitems
 from environment_manager import EMApi
 from envmgr.commands.spinner import Spinner
 from envmgr import __version__ as VERSION
@@ -41,7 +42,7 @@ class BaseCommand(object):
                 else:
                     self.cmds[k] = v
 
-        safe_log_opts = {k: v for k, v in self.opts.items() if k != 'pass' }
+        safe_log_opts = {k: v for k, v in viewitems(self.opts) if k != 'pass' }
     
         logging.debug('Args: {0}'.format(self.cli_args))
         logging.debug('Opts: {0}'.format(safe_log_opts))
