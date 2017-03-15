@@ -7,6 +7,7 @@ import errno
 from codecs import open
 from hashlib import sha1
 from appdirs import user_data_dir
+from envmgr.commands.utils.file_utils import safe_create_dir_path
 
 class PatchFile(object):
 
@@ -38,12 +39,7 @@ class PatchFile(object):
     
     @staticmethod
     def safe_open_w(filepath):
-        path = os.path.dirname(filepath)
-        try:
-            os.makedirs(path)
-        except OSError as exc:
-            if exc.errno == errno.EEXIST and os.path.isdir(path): pass
-            else: raise
+        safe_create_dir_path(filepath)
         return open(filepath, 'w', encoding='utf-8')
 
     @staticmethod

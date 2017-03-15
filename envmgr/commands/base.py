@@ -5,6 +5,7 @@ import re
 import json
 import sys
 import platform
+import logging
 
 from environment_manager import EMApi
 from envmgr.commands.spinner import Spinner
@@ -26,6 +27,7 @@ class BaseCommand(object):
         self.cli_args = {}
         self.cmds = {}
         self.spinner = None
+        user_agent = BaseCommand.get_user_agent()
 
         for (k, v) in options.items():
             if v is not None:
@@ -39,22 +41,28 @@ class BaseCommand(object):
                 else:
                     self.cmds[k] = v
 
+        safe_log_opts = {k: v for k, v in self.opts.items() if k != 'pass' }
+    
+        logging.debug('Args: {0}'.format(self.cli_args))
+        logging.debug('Opts: {0}'.format(safe_log_opts))
+        logging.debug('User-Agent: {0}'.format(user_agent))
+
         host = self.get_config('host', 'ENVMGR_HOST')
         user = self.get_config('user', 'ENVMGR_USER')
         pwrd = self.get_config('pass', 'ENVMGR_PASS')
-        headers = {'User-Agent':BaseCommand.get_user_agent()}
+        headers = {'User-Agent':user_agent}
         self.api = EMApi(server=host, user=user, password=pwrd, retries=1, default_headers=headers)
 
     def run(self):
         raise NotImplementedError('Subclass does not implement run')
 
     def show_activity(self):
-        if not self.opts.get('json'):
+        if not self.opts.get('json') and not self.opts.get('ci-mode'):
             self.spinner = Spinner()
             self.spinner.start()
 
     def stop_spinner(self):
-        if not self.opts.get('json') and self.spinner is not None:
+        if not self.opts.get('json') and not self.opts.get('ci-mode') and self.spinner is not None:
             self.spinner.stop()
 
     def get_config(self, option, env_name):

@@ -6,75 +6,100 @@ envmgr
 Usage:
     envmgr get <service> health in <env> 
         [<slice>] 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr get <service> (active|inactive) slice in <env> 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr get asg <name> status in <env> 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr get asg <name> health in <env> 
+        [(--json | --ci-mode)] 
         [--json] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr get asg <name> schedule in <env> 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
+    envmgr get asg <name> scaling schedule in <env> 
+        [(--json | --ci-mode)] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr get deploy status <deploy_id> 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr get <cluster> patch status in <env> 
         [--from-ami=<old_ami> --to-ami=<new_ami>] 
         [(--match=<asg>... | --ignore=<asg>... | --whitelist=<file> | --blacklist=<file>)] 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr wait-for deploy <deploy_id> 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr wait-for healthy <service> in <env> 
         [<slice>] 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr wait-for asg <name> in <env> 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr publish <file> as <service> <version> 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr deploy <service> <version> in <env> 
         [<slice>] 
         [--role=<server_role>] 
         [--dry-run] 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr toggle <service> in <env> 
-        [--json] 
+        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr patch <cluster> in <env> 
         [--from-ami=<old_ami> --to-ami=<new_ami>] 
         [(--match=<asg>... | --ignore=<asg>... | --whitelist=<file> | --blacklist=<file>)] 
         [--kill] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr verify
-    envmgr -h | --help
+        [--ci-mode]
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+        [--verbose]
+    envmgr --help
     envmgr --version
 
 Options:
@@ -91,6 +116,8 @@ Options:
     -u --user=<user_name>           Username to override environment variable value.
     -p --pass=<password>            Password to overide environment variable value.
     -j --json                       Output the raw json response from Environment Manager.
+    -v --verbose                    Output verbose logging straight to stdout instead of logfile
+    -c --ci-mode                    Only provide output that is safe for Contiuous Integration environments.
     --help                          Show this screen.
     --version                       Show version.
 
@@ -109,12 +136,17 @@ Help:
     https://trainline.github.io/environment-manager/
 """
 
+import os
 import sys
+import logging
+import traceback
 
 from inspect import getmembers, isclass
+from appdirs import user_log_dir
 from docopt import docopt
 from . import __version__ as VERSION
 from envmgr.commands import ASG, Deploy, Patch, Publish, Service, Toggle, Verify
+from envmgr.commands.utils.file_utils import safe_create_dir_path
 
 commands = {
     'asg':ASG,
@@ -126,14 +158,27 @@ commands = {
     'verify':Verify
 }
 
-def except_hook(exec_type, value, trace_back):
+def setup_logger(verbose):
+    if verbose:
+        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    else:
+        log_dir = user_log_dir('envmgr', 'trainline')
+        log_file = os.path.join(log_dir, 'envmgr.log')
+        safe_create_dir_path(log_file)
+        logging.basicConfig(filename=log_file, level=logging.DEBUG, format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
+
+def except_hook(exc_type, value, trace_back):
     print(value)
+    if not issubclass(exc_type, KeyboardInterrupt):
+        text = "".join(traceback.format_exception(exc_type, value, trace_back))
+        logging.error("Unhandled exception: %s", text)
 
 sys.excepthook = except_hook
 
 def main():
     """Main CLI entrypoint."""
     options = docopt(__doc__, version=VERSION)
+    setup_logger(options.get('--verbose', False))
     priority_order = ["asg", "deploy", "patch", "toggle", "publish", "verify", "service"]
     cmd_opts = options.copy()
     
@@ -142,6 +187,7 @@ def main():
 
     for cmd in priority_order:
         if cmd_opts[cmd]:
+            logging.info('Running {0} command'.format(cmd))
             CommandClass = commands[cmd]
             command = CommandClass(options)
             command.run()
