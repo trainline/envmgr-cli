@@ -43,6 +43,11 @@ Usage:
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
+    envmgr get instances older than <age> days in <env> 
+        [(--json | --ci-mode)] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr wait-for deploy <deploy_id> 
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
@@ -140,11 +145,12 @@ from inspect import getmembers, isclass
 from appdirs import user_log_dir
 from docopt import docopt
 from . import __version__ as VERSION
-from envmgr.commands import ASG, Deploy, Patch, Publish, Service, Toggle, Verify
+from envmgr.commands import ASG, Deploy, Patch, Publish, Service, Toggle, Verify, Instance
 from envmgr.commands.utils.file_utils import safe_create_dir_path
 
 commands = {
     'asg':ASG,
+    'instances':Instance,
     'deploy':Deploy,
     'patch':Patch,
     'publish':Publish,
@@ -174,7 +180,7 @@ def main():
     """Main CLI entrypoint."""
     options = docopt(__doc__, version=VERSION)
     setup_logger(options.get('--verbose', False))
-    priority_order = ["asg", "deploy", "patch", "toggle", "publish", "verify", "service"]
+    priority_order = ["asg", "instances", "deploy", "patch", "toggle", "publish", "verify", "service"]
     cmd_opts = options.copy()
     
     if cmd_opts["<service>"] is not None:

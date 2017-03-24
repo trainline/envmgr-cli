@@ -7,4 +7,6 @@ from .deploy import *
 from .patch import *
 from .verify import *
 from .toggle import *
+from .instance import *
 from .base import *
+
