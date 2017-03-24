@@ -44,6 +44,7 @@ Usage:
         [--user=<user_name> --pass=<password>]
         [--verbose]
     envmgr get instances older than <age> days in <env> 
+        [--sort=(age|ami|cluster|role|state)]
         [--report] 
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
@@ -111,6 +112,7 @@ Options:
     -i --ignore=<asg>               Name of an ASG to ignore when patching (multiple allowed)
     -w --whitelist=<file>           Path to file containing line-separated list of ASG names to match when patching.
     -b --blacklist=<file>           Path to file containing line-separated list of ASG names to ignore when patching.
+    -s --sort=<key>                 Sort the results by the given key
     -o --report                     Save a report to the current directory
     -k --kill                       Kills a currently running patch operation.
     -d --dry-run                    Validate a deployment request without actually performing a deployment.

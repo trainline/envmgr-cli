@@ -16,6 +16,12 @@ class Instance(BaseCommand):
 
     def describe_old_instances(self, env, age):
         result = self.get_old_instances(env, age)
+        sort_key = self.opts.get('sort')
+        
+        if sort_key is not None:
+            reverse = True if sort_key == 'age' else False
+            result = sorted(result, key=lambda k: k[sort_key], reverse=reverse)
+
         table_data = map(lambda i: {
             0: i.get('cluster'),
             1: i.get('role'),
