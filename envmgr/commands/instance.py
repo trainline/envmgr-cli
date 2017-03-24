@@ -48,7 +48,7 @@ class Instance(BaseCommand):
         old_instances = [ instance for instance in instances if 
             any(ami for ami in self.amis if all([ match(ami,instance) for match in matchers ]) )
         ]
-        return map(self.get_instance_info, old_instances)
+        return list(map(self.get_instance_info, old_instances))
 
     def get_instance_info(self, instance):
         tags = instance.get('Tags', [])
