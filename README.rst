@@ -68,8 +68,6 @@ Examples
 service and 'my-asg' is an ASG, all of which are already registered in
 Environment Manager.*
 
-Get the health status of all instances of *AwesomeService*, in all slices:
-
 .. code-block:: bash
 
     # Get the health status of all instances of AwesomeService, in all slices:
