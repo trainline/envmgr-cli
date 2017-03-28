@@ -1,11 +1,5 @@
-envmgr 
+envmgr |pypi| |travis| |appveyor|
 ======
-
-.. image:: https://img.shields.io/badge/python-2.7%2C%203.4%2C%203.5%2C%203.6-blue.svg
-    :align: left
-
-.. image:: https://travis-ci.org/trainline/envmgr-cli.svg?branch=master
-    :target: https://travis-ci.org/trainline/envmgr-cli
 
 A cross-platform CLI client for `Environment
 Manager <https://github.com/trainline/environment-manager>`__
@@ -172,3 +166,12 @@ For convenience this is also available via the included `makefile`:
 ::
 
     make test
+
+.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/w50g5yb1fh4qh3rq?svg=true
+    :target: https://ci.appveyor.com/project/duncanhall/envmgr-cli/branch/master
+
+.. |travis| image:: https://travis-ci.org/trainline/envmgr-cli.svg?branch=master
+    :target: https://travis-ci.org/trainline/envmgr-cli
+
+.. |pypi| image:: https://img.shields.io/badge/python-2.7%2C%203.4%2C%203.5%2C%203.6-blue.svg
+    :target: https://pypi.python.org/pypi/envmgr-cli/1.5.2
