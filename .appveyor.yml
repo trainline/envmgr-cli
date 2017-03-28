@@ -12,5 +12,5 @@ install:
   - "%PYTHON%\\python.exe -m pip install wheel"
 build: off
 test_script:
-  - "build.cmd %PYTHON%\\python.exe setup.py test --addopts -v"
+  - "%PYTHON%\\python.exe setup.py test --addopts -v"
 
