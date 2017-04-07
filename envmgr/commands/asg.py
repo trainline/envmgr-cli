@@ -22,8 +22,15 @@ class ASG(BaseCommand):
             self.wait_for(**self.cli_args)
         elif self.cmds.get('check'):
             self.check_exists(**self.cli_args)
+        elif self.cmds.get('name'):
+            self.get_asg_name(**self.cli_args)
         else:
             print("Unknown ASG command")
+
+    def get_asg_name(self, service, env, slice):
+        asgs = self.api.get_service_asgs(service, env, slice)
+        asg = asgs[0]
+        self.show_result(asg, asg.get('AutoScalingGroupName', 'Asg name not found :('))
 
     def check_exists(self, env, name):
         try:

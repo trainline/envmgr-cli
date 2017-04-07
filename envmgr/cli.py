@@ -25,6 +25,11 @@ Usage:
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
+    envmgr get asg name for <slice> <service> in <env> 
+        [(--json | --ci-mode)] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr get asg <name> health in <env> 
         [(--json | --ci-mode)] 
         [--json] 
