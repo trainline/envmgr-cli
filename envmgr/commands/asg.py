@@ -20,8 +20,17 @@ class ASG(BaseCommand):
             self.get_status(**self.cli_args)
         elif self.cmds.get('wait-for'):
             self.wait_for(**self.cli_args)
+        elif self.cmds.get('check'):
+            self.check_exists(**self.cli_args)
         else:
             print("Unknown ASG command")
+
+    def check_exists(self, env, name):
+        try:
+            asg = self.api.get_asg(env, name, retries=1)
+            self.show_result({'exists':True}, True)
+        except:
+            self.show_result({'exists':False}, False)
 
     def describe_schedule(self, env, name):
         result = self.get_schedule(env, name)

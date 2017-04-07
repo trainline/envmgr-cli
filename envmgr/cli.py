@@ -15,6 +15,11 @@ Usage:
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
+    envmgr check asg <name> exists in <env> 
+        [(--json | --ci-mode)] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr get asg <name> status in <env> 
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
