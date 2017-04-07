@@ -66,6 +66,12 @@ Usage:
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
+    envmgr wait-for toggle to <slice> <service> in <env> 
+        [--upstream=<upstream>]
+        [(--json | --ci-mode)] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> 
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
@@ -113,6 +119,7 @@ Options:
     -w --whitelist=<file>           Path to file containing line-separated list of ASG names to match when patching.
     -b --blacklist=<file>           Path to file containing line-separated list of ASG names to ignore when patching.
     -s --sort=<key>                 Sort the results by the given key
+    -l --upstream=<upstream>        The name of the upstream to check
     -o --report                     Save a report to the current directory
     -k --kill                       Kills a currently running patch operation.
     -d --dry-run                    Validate a deployment request without actually performing a deployment.
@@ -178,7 +185,7 @@ def except_hook(exc_type, value, trace_back):
         text = "".join(traceback.format_exception(exc_type, value, trace_back))
         logging.error("Unhandled exception: %s", text)
 
-sys.excepthook = except_hook
+# sys.excepthook = except_hook
 
 def main():
     """Main CLI entrypoint."""
