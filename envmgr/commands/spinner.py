@@ -19,7 +19,7 @@ class Spinner(object):
     def stop(self):
         self.stop_running.set()
         self.spin_thread.join()
-        sys.stdout.write('\r ')
+        sys.stdout.write('\r')
         sys.stdout.flush()
     
     def init_spin(self):
