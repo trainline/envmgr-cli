@@ -14,8 +14,8 @@ class Instance(BaseCommand):
         self.show_activity()
         self.describe_old_instances(**self.cli_args)
 
-    def describe_old_instances(self, env, age):
-        result = self.get_old_instances(env, age)
+    def describe_old_instances(self, age):
+        result = self.get_old_instances(age)
         sort_key = self.opts.get('sort')
         
         if sort_key is not None:
@@ -34,17 +34,21 @@ class Instance(BaseCommand):
         msg = os.linesep + tabulate(table_data, headers, tablefmt="simple") + os.linesep
         self.show_result(result, msg)
         if self.opts.get('report'):
-            filepath = self.write_report(result, env, age)
+            filepath = self.write_report(result, age)
             print('Report saved to {0}'.format(filepath))
         
-    def write_report(self, content, env, age):
-        filepath = os.path.join(os.getcwd(), 'instances_older_than_{0}_in_{1}.json'.format(age, env))
+    def write_report(self, content, age):
+        filepath = os.path.join(os.getcwd(), 'instances_older_than_{0}_days.json'.format(age))
         with PatchFile.safe_open_w(filepath) as f:
             f.write(str(json.dumps(content, ensure_ascii=False)))
         return filepath
     
-    def get_old_instances(self, env, age):
-        instances = self.api.get_instances(env)
+    def get_old_instances(self, age):
+        env = self.opts.get('env')
+        cluster = self.opts.get('cluster')
+        account = self.opts.get('account')
+
+        instances = self.api.get_instances(env, cluster, account)
         self.amis = self.api.get_images()
         age = int(age)
         matchers = [

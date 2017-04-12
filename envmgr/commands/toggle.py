@@ -57,7 +57,6 @@ class Toggle(BaseCommand):
             else:
                 time.sleep(10)
 
-
     def get_upstream_and_lbs(self, slice, service, env):
         env = env.lower()
         slice = slice.lower()

@@ -43,7 +43,10 @@ Usage:
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
-    envmgr get instances older than <age> days in <env> 
+    envmgr get instances older than <age> days
+        [--env=<env>]
+        [--cluster=<cluster>]
+        [--account=<account>]
         [--sort=(age|ami|cluster|role|state)]
         [--report] 
         [(--json | --ci-mode)] 
