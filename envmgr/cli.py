@@ -53,9 +53,18 @@ Usage:
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
-    envmgr get instances older than <age> days in <env> 
+    envmgr get instances older than <age> days
+        [--env=<env>]
+        [--cluster=<cluster>]
+        [--account=<account>]
         [--sort=(age|ami|cluster|role|state)]
         [--report] 
+        [(--json | --ci-mode)] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+        [--verbose]
+    envmgr get upstream status for <slice> <service> in <env> 
+        [--upstream=<upstream>]
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
@@ -72,6 +81,12 @@ Usage:
         [--user=<user_name> --pass=<password>]
         [--verbose]
     envmgr wait-for asg <name> in <env> 
+        [(--json | --ci-mode)] 
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+        [--verbose]
+    envmgr wait-for toggle to <slice> <service> in <env> 
+        [--upstream=<upstream>]
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
@@ -123,6 +138,7 @@ Options:
     -w --whitelist=<file>           Path to file containing line-separated list of ASG names to match when patching.
     -b --blacklist=<file>           Path to file containing line-separated list of ASG names to ignore when patching.
     -s --sort=<key>                 Sort the results by the given key
+    -l --upstream=<upstream>        The name of the upstream to check
     -o --report                     Save a report to the current directory
     -k --kill                       Kills a currently running patch operation.
     -d --dry-run                    Validate a deployment request without actually performing a deployment.
@@ -170,6 +186,7 @@ commands = {
     'publish':Publish,
     'service':Service,
     'toggle':Toggle,
+    'upstream':Toggle,
     'verify':Verify
 }
 
@@ -183,7 +200,7 @@ def setup_logger(verbose):
         logging.basicConfig(filename=log_file, level=logging.DEBUG, format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
 
 def except_hook(exc_type, value, trace_back):
-    print(value)
+    print('\r{0}'.format(value))
     if not issubclass(exc_type, KeyboardInterrupt):
         text = "".join(traceback.format_exception(exc_type, value, trace_back))
         logging.error("Unhandled exception: %s", text)
@@ -194,7 +211,7 @@ def main():
     """Main CLI entrypoint."""
     options = docopt(__doc__, version=VERSION)
     setup_logger(options.get('--verbose', False))
-    priority_order = ["asg", "instances", "deploy", "patch", "toggle", "publish", "verify", "service"]
+    priority_order = ["asg", "instances", "deploy", "patch", "toggle", "upstream", "publish", "verify", "service"]
     cmd_opts = options.copy()
     
     if cmd_opts["<service>"] is not None:

@@ -1,5 +1,5 @@
 envmgr |pypi| |travis| |appveyor|
-======
+==================================
 
 A cross-platform CLI client for `Environment
 Manager <https://github.com/trainline/environment-manager>`__
