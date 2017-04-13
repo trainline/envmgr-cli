@@ -83,7 +83,7 @@ class ASG(BaseCommand):
         result = self.set_schedule(env, name, schedule)
         n = len(list(result.get('ChangedInstances')))
         i = 'instance' if n == 1 else 'instances'
-        s = 'default' if self.cmds.get('default') else data.get('schedule')
+        s = 'default' if self.cmds.get('default') else schedule
         self.show_result(result, "Scheduled {0} {1} in {2} to: {3}".format(n, i, name, s))
 
     def set_schedule(self, env, name, schedule):        
