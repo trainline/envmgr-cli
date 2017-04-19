@@ -34,7 +34,7 @@ setup(
         'semver',
         'appdirs',
         'progressbar2',
-        'environment_manager==0.2.4'
+        'environment_manager==0.2.5'
     ],
     setup_requires = pytest_runner,
     tests_require = [
