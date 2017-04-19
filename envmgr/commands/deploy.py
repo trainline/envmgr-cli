@@ -37,7 +37,7 @@ class Deploy(BaseCommand):
         else:
             data['mode'] = 'overwrite'
 
-        role = self.opts.get('Role')
+        role = self.opts.get('role')
         if role is not None:
             data['serverRole']
 
