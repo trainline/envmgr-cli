@@ -37,6 +37,10 @@ class Deploy(BaseCommand):
         else:
             data['mode'] = 'overwrite'
 
+        role = self.opts.get('Role')
+        if role is not None:
+            data['serverRole']
+
         dry_run = 'true' if is_dry_run else 'false'
         return self.api.post_deployments(dry_run, data)
 
