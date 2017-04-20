@@ -39,7 +39,7 @@ class Deploy(BaseCommand):
 
         role = self.opts.get('role')
         if role is not None:
-            data['serverRole']
+            data['serverRole'] = role
 
         dry_run = 'true' if is_dry_run else 'false'
         return self.api.post_deployments(dry_run, data)
