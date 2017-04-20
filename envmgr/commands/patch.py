@@ -9,6 +9,7 @@ from envmgr.commands.base import BaseCommand
 from envmgr.commands.asg import ASG
 from envmgr.commands.patching.patch_operation import PatchOperation
 from envmgr.commands.patching.patch_table import patch_table
+from envmgr.commands.patching.validate import server_has_valid_ami
 from envmgr.commands.user_confirmation import confirm
 from math import ceil
 from repoze.lru import lru_cache
@@ -16,6 +17,7 @@ from repoze.lru import lru_cache
 class Patch(BaseCommand):
     amis = []
     servers = []
+    all_servers = []
 
     def run(self):
         self.show_activity()
@@ -30,6 +32,7 @@ class Patch(BaseCommand):
     def show_current_status(self, cluster, env):
         patch_operation = PatchOperation.get_current(cluster, env)
         patch_status = PatchOperation.get_current_status(cluster, env)
+        self.stop_spinner()
         self.show_result(patch_operation, patch_status)
 
     def get_patch_status(self, cluster, env):
@@ -92,6 +95,7 @@ class Patch(BaseCommand):
     def confirm_patch(self, patches):
         to_patch = PatchOperation.get_patches_by_availability(patches, True)
         to_ignore = PatchOperation.get_patches_by_availability(patches, False)
+        to_ignore += [ {'server_name':server, 'invalid_ami':True} for server in self.ignored_servers ]
         message = PatchOperation.describe_patches(to_patch, to_ignore)
         if not to_patch:
             self.show_result({}, message)
@@ -110,8 +114,13 @@ class Patch(BaseCommand):
         self.servers = self.api.get_environment_servers(env).get('Value')
         self.servers = [ server for server in self.servers if 
             'Ami' in server and server.get('Cluster').lower() == cluster.lower() 
-            and server.get('IsBeingDeleted') != True ]
+            and server.get('IsBeingDeleted') != True
+        ]
         
+        # Filter out odd servers with no valid AMI info
+        self.ignored_servers = [ server.get('Name') for server in self.servers if not server_has_valid_ami(server) ]
+        self.servers = [ server for server in self.servers if server_has_valid_ami(server) ]
+
         # List of requirements to be considered for updates
         # Prefer 'latest stable' info from image, not server
         update_requirements = [ lambda ami,server: ami.get('Name') == server.get('Ami').get('Name') ]
@@ -154,6 +163,7 @@ class Patch(BaseCommand):
             p['az_count'] = n_azs
             p['scale_up_count'] = scale_up_count
             p['max_count'] = asg.get('MaxSize', n_instances)
+
             # Check for any instances in standby
             if any([ instance for instance in asg.get('Instances', []) if instance.get('LifecycleState') == 'Standby' ]):
                 p['has_standby_instances'] = True

@@ -37,9 +37,9 @@ class PatchOperation(object):
     @staticmethod
     def get_patches_by_availability(patches, available):
         if available:
-            return [ patch for patch in patches if not patch.get('has_standby_instances') and not patch.get('unhealthy') ]
+            return [ patch for patch in patches if not patch.get('has_standby_instances') and not patch.get('unhealthy') and not patch.get('invalid_ami')]
         else:
-            return [ patch for patch in patches if patch.get('has_standby_instances') or patch.get('unhealthy') ]
+            return [ patch for patch in patches if patch.get('has_standby_instances') or patch.get('unhealthy') or patch.get('invalid_ami')]
 
     @staticmethod
     def describe_patches(to_run, to_ignore=None):

@@ -10,6 +10,8 @@ def get_default_status(p):
         return 'Instances in standby'
     elif p.get('unhealthy') is not None:
         return describe_asg_health(p.get('unhealthy'))
+    elif p.get('invalid_ami'):
+        return 'Invalid AMI data'
     elif p.get('warning'):
         return 'Warning' 
     else:
