@@ -5,29 +5,32 @@ import time
 import sys
 import os
 
-from envmgr.commands.base import BaseCommand
-from envmgr.commands.asg import ASG
-from envmgr.commands.patching.patch_operation import PatchOperation
-from envmgr.commands.patching.patch_table import patch_table
-from envmgr.commands.patching.validate import server_has_valid_ami
-from envmgr.commands.user_confirmation import confirm
+from envmgr import EmClient, ASG
+
+from emcli.commands.base import BaseCommand
+from emcli.commands.patching.patch_operation import PatchOperation
+from emcli.commands.patching.patch_table import patch_table
+from emcli.commands.patching.validate import server_has_valid_ami
+from emcli.commands.user_confirmation import confirm
 from math import ceil
 from repoze.lru import lru_cache
 
-class Patch(BaseCommand):
+class PatchCommand(BaseCommand):
     amis = []
     servers = []
     all_servers = []
 
-    def run(self):
-        self.show_activity()
-        if self.cmds.get('get') and self.cmds.get('status'):
-            if PatchOperation.is_in_progress(**self.cli_args):
-                self.show_current_status(**self.cli_args)
-            else:
-                self.get_patch_status(**self.cli_args)
+    def __init__(self, options, *args, **kwargs):
+        super(PatchCommand, self).__init__(options, *args, **kwargs)
+        self.api = EmClient()
+        self._register(('get', 'status'), self.describe_status)
+        self._register(('patch', '!get'), self.run_patch_update)
+
+    def describe_status(self, cluster, env):
+        if PatchOperation.is_in_progress(cluster, env):
+            self.show_current_status(cluster, env)
         else:
-            self.run_patch_update(**self.cli_args)
+            self.get_patch_status(cluster, env)
     
     def show_current_status(self, cluster, env):
         patch_operation = PatchOperation.get_current(cluster, env)
@@ -168,7 +171,7 @@ class Patch(BaseCommand):
             if any([ instance for instance in asg.get('Instances', []) if instance.get('LifecycleState') == 'Standby' ]):
                 p['has_standby_instances'] = True
             # Check for overall health
-            asg_status = ASG({}).get_health(env, asg_name)
+            asg_status = ASG(asg_name, env).get_health()
             if not asg_status.get('is_healthy'):
                 p['unhealthy'] = asg_status
 

@@ -25,7 +25,7 @@ Usage:
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
-    envmgr get asg name for <slice> <service> in <env> 
+    envmgr get asg <name> schedule in <env> 
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
@@ -33,11 +33,6 @@ Usage:
     envmgr get asg <name> health in <env> 
         [(--json | --ci-mode)] 
         [--json] 
-        [--host=<host_name>] 
-        [--user=<user_name> --pass=<password>]
-        [--verbose]
-    envmgr get asg <name> schedule in <env> 
-        [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
@@ -53,11 +48,11 @@ Usage:
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
-    envmgr get instances older than <age> days
+    envmgr get instances out of date by <age> days
         [--env=<env>]
         [--cluster=<cluster>]
         [--account=<account>]
-        [--sort=(age|ami|cluster|role|state)]
+        [--sort=(age|ami_age|ami_name|env|type|cluster|role|state)]
         [--report] 
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
@@ -91,7 +86,7 @@ Usage:
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
-    envmgr schedule asg <name> (on|off|default|--cron=<expression>) in <env> 
+    envmgr set asg <name> schedule (on|off|default|--cron=<expression>) in <env> 
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
@@ -118,11 +113,12 @@ Usage:
         [--from-ami=<old_ami> --to-ami=<new_ami>] 
         [(--match=<asg>... | --ignore=<asg>... | --whitelist=<file> | --blacklist=<file>)] 
         [--kill] 
+        [(--json | --ci-mode)]
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
     envmgr verify
-        [--ci-mode]
+        [(--json | --ci-mode)]
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
@@ -175,20 +171,20 @@ from inspect import getmembers, isclass
 from appdirs import user_log_dir
 from docopt import docopt
 from . import __version__ as VERSION
-from envmgr.commands import ASG, Deploy, Patch, Publish, Service, Toggle, Verify, Instance
-from envmgr.commands.utils.file_utils import safe_create_dir_path
+from emcli.commands import AsgCommand, DeployCommand, PublishCommand, ServiceCommand, ToggleCommand, VerifyCommand, InstanceCommand, PatchCommand
+from emcli.commands.utils.file_utils import safe_create_dir_path
 
 commands = {
-    'asg':ASG,
-    'instances':Instance,
-    'deploy':Deploy,
-    'patch':Patch,
-    'publish':Publish,
-    'service':Service,
-    'toggle':Toggle,
-    'upstream':Toggle,
-    'verify':Verify
-}
+        'asg':AsgCommand,
+        'instances':InstanceCommand,
+        'deploy':DeployCommand,
+        'patch':PatchCommand,
+        'publish':PublishCommand,
+        'service':ServiceCommand,
+        'toggle':ToggleCommand,
+        'upstream':ToggleCommand,
+        'verify':VerifyCommand
+        }
 
 def setup_logger(verbose):
     if verbose:
@@ -213,7 +209,7 @@ def main():
     setup_logger(options.get('--verbose', False))
     priority_order = ["asg", "instances", "deploy", "patch", "toggle", "upstream", "publish", "verify", "service"]
     cmd_opts = options.copy()
-    
+
     if cmd_opts["<service>"] is not None:
         cmd_opts["service"] = True
 

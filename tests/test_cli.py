@@ -4,26 +4,32 @@ import sys
 
 from unittest import TestCase
 from mock import patch
-from envmgr.cli import main, except_hook
+from emcli.cli import main, except_hook
 from nose_parameterized import parameterized
 
 TEST_COMMANDS = [
-    ('get MockService health in prod',              'envmgr.cli.Service.run'),
-    ('get AcmeService health in prod green',        'envmgr.cli.Service.run'),
-    ('get CoolService active slice in dev',         'envmgr.cli.Service.run'),
-    ('get CoolService inactive slice in staging',   'envmgr.cli.Service.run'),
-    ('wait-for healthy CoolService in prod',        'envmgr.cli.Service.run'),
-    ('get asg mock-asg status in prod',             'envmgr.cli.ASG.run'),
-    ('get asg mock-asg health in test',             'envmgr.cli.ASG.run'),
-    ('get asg mock-asg schedule in staging',        'envmgr.cli.ASG.run'),
-    ('wait-for asg mock-asg in prod',               'envmgr.cli.ASG.run'),
-    ('schedule asg mock-asg off in staging',        'envmgr.cli.ASG.run'),
-    ('deploy MyService 1.4.0 in prod',              'envmgr.cli.Deploy.run'),
-    ('get deploy status a2fbb0c0-ed4c-11e6-85b1',   'envmgr.cli.Deploy.run'),
-    ('wait-for deploy a2fbb0c0-ed4c-11e6-85b1',     'envmgr.cli.Deploy.run'),
-    ('publish build-22.zip as AcmeService 1.2.3',   'envmgr.cli.Publish.run'),
-    ('toggle MyService in staging',                 'envmgr.cli.Toggle.run'),
-    ('get A-team patch status in prod',             'envmgr.cli.Patch.run'),
+    ('get MockService health in prod',                      'emcli.cli.ServiceCommand.run'),
+    ('get AcmeService health in prod green',                'emcli.cli.ServiceCommand.run'),
+    ('get CoolService active slice in dev',                 'emcli.cli.ServiceCommand.run'),
+    ('get CoolService inactive slice in staging',           'emcli.cli.ServiceCommand.run'),
+    ('wait-for healthy CoolService in prod',                'emcli.cli.ServiceCommand.run'),
+    ('check asg mock-asg exists in prod',                   'emcli.cli.AsgCommand.run'),
+    ('get asg mock-asg status in prod',                     'emcli.cli.AsgCommand.run'),
+    ('get asg mock-asg schedule in staging',                'emcli.cli.AsgCommand.run'),
+    ('get asg mock-asg health in test',                     'emcli.cli.AsgCommand.run'),
+    ('wait-for asg mock-asg in prod',                       'emcli.cli.AsgCommand.run'),
+    ('set asg mock-asg schedule off in staging',            'emcli.cli.AsgCommand.run'),
+    ('get instances out of date by 30 days --env=prod',     'emcli.cli.InstanceCommand.run'),
+    ('deploy MyService 1.4.0 in prod',                      'emcli.cli.DeployCommand.run'),
+    ('get deploy status a2fbb0c0-ed4c-11e6-85b1',           'emcli.cli.DeployCommand.run'),
+    ('wait-for deploy a2fbb0c0-ed4c-11e6-85b1',             'emcli.cli.DeployCommand.run'),
+    ('publish build-22.zip as AcmeService 1.2.3',           'emcli.cli.PublishCommand.run'),
+    ('toggle MyService in staging',                         'emcli.cli.ToggleCommand.run'),
+    ('get upstream status for blue MyService in staging',   'emcli.cli.ToggleCommand.run'),
+    ('wait-for toggle to blue MyService in staging',        'emcli.cli.ToggleCommand.run'),
+    ('get A-team patch status in prod',                     'emcli.cli.PatchCommand.run'),
+    ('patch team in prod',                                  'emcli.cli.PatchCommand.run'),
+    ('verify',                                              'emcli.cli.VerifyCommand.run')
 ]
 
 class TestCLI(TestCase):

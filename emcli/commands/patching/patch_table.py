@@ -2,7 +2,7 @@
 
 import os
 
-from envmgr.commands.utils.asg_health import describe_asg_health
+from emcli.commands.utils.asg_health import describe_asg_health
 from tabulate import tabulate
 
 def get_default_status(p):

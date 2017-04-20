@@ -6,11 +6,12 @@ import json
 import sys
 import platform
 import logging
+import envmgr
 
+from base64 import b64encode
 from future.utils import viewitems
-from environment_manager import EMApi
-from envmgr.commands.spinner import Spinner
-from envmgr import __version__ as VERSION
+from emcli.commands.spinner import Spinner
+from emcli import __version__ as VERSION
 
 class BaseCommand(object):
 
@@ -28,6 +29,7 @@ class BaseCommand(object):
         self.cli_args = {}
         self.cmds = {}
         self.spinner = None
+        self.register = {}
         user_agent = BaseCommand.get_user_agent()
 
         for (k, v) in options.items():
@@ -52,10 +54,41 @@ class BaseCommand(object):
         user = self.get_config('user', 'ENVMGR_USER')
         pwrd = self.get_config('pass', 'ENVMGR_PASS')
         headers = {'User-Agent':user_agent}
-        self.api = EMApi(server=host, user=user, password=pwrd, retries=1, default_headers=headers)
+        #TODO: envmgr config currently does not accept the above header
+        envmgr.config(host, user, b64encode(pwrd))
+
+    def _register(self, cmd, action, with_spinner=True):
+        """
+        Register a method to run when the given set of commands are matched
+        """
+        self.register[cmd] = (action, with_spinner)
 
     def run(self):
-        raise NotImplementedError('Subclass does not implement run')
+        command = None
+
+        def match_command(cmd):
+            q = cmd.split('!')
+            if len(q) is 1:
+                return self.cmds.get(cmd)
+            elif len(q) is 2:
+                return not self.cmds.get(q[1])
+            else:
+                raise Exception('Unknown command matcher: {0}'.format(cmd))
+
+        for key in self.register:
+            if isinstance(key, tuple):
+                if all([ match_command(cmd) for cmd in key ]):
+                    command = self.register[key]
+            else:
+                if self.cmds.get(key):
+                    command = self.register[key]
+        if command is not None:
+            (action, with_spinner) = command
+            if with_spinner:
+                self.show_activity()
+            action(**self.cli_args)
+        else:
+            raise Exception('Unknown command')
 
     def show_activity(self):
         if not self.opts.get('json') and not self.opts.get('ci-mode'):

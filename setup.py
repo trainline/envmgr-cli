@@ -5,7 +5,7 @@ import sys
 from setuptools import find_packages, setup
 from codecs import open
 from os.path import abspath, dirname, join
-from envmgr import __version__
+from emcli import __version__
 
 this_dir = abspath(dirname(__file__))
 with open(join(this_dir, 'README.rst'), encoding='utf-8') as file:
@@ -26,15 +26,13 @@ setup(
     packages = find_packages(exclude=['tests*']),
     install_requires = [
         'docopt',
-        'requests',
         'simplejson',
         'tabulate',
-        'repoze.lru',
         'future',
         'semver',
         'appdirs',
         'progressbar2',
-        'environment_manager==0.2.5'
+        'envmgr-lib==0.1.0'
     ],
     setup_requires = pytest_runner,
     tests_require = [
@@ -46,7 +44,7 @@ setup(
     ],
     entry_points = {
         'console_scripts': [
-            'envmgr=envmgr.cli:main',
+            'envmgr=emcli.cli:main',
         ],
     },
 )

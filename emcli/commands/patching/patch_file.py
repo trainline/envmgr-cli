@@ -8,7 +8,7 @@ from builtins import str
 from codecs import open
 from hashlib import sha1
 from appdirs import user_data_dir
-from envmgr.commands.utils.file_utils import safe_create_dir_path
+from emcli.commands.utils.file_utils import safe_create_dir_path
 
 class PatchFile(object):
 

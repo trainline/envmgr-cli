@@ -6,7 +6,7 @@ import string
 import os
 
 from unittest import TestCase
-from envmgr.commands import Patch
+from emcli.commands import PatchCommand
 from nose_parameterized import parameterized, param
 from mock import patch
 from .helpers.api_test_case import APITestCase
@@ -26,8 +26,8 @@ class PatchTest(APITestCase):
         servers_in_env = []
         self.mock_response(r'/asgs/[\w\.\-]+', {'AvailabilityZones':[1]})
         self.mock_response(r'/environments/[\w\.\-]+/servers/[\w\.\-]+', 
-                {'ServicesCount':{'Expected':2}, 'Instances':[{'RunningServicesCount':2}]}
-                )
+            {'ServicesCount':{'Expected':2}, 'Instances':[{'RunningServicesCount':2}]}
+        )
 
         # Create a list of servers in env, based on test scenario
         for server_desc in args:
@@ -36,7 +36,7 @@ class PatchTest(APITestCase):
         self.setup_responses()
         self.respond_with_servers(servers_in_env)
 
-        sut = Patch({})
+        sut = PatchCommand({})
         result = sut.get_patch_requirements( **{
             'cluster':patch_cluster,
             'env':'staging',

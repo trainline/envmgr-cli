@@ -2,9 +2,9 @@
 
 import datetime
 
-from envmgr.commands.asg import ASG
-from envmgr.commands.patching.patch_states import PatchStates
-from envmgr.commands.patching.patch_file import PatchFile
+from envmgr import ASG
+from emcli.commands.patching.patch_states import PatchStates
+from emcli.commands.patching.patch_file import PatchFile
 
 class PatchProcess(object):
 
@@ -51,8 +51,8 @@ class PatchProcess(object):
         if not patches:
             return
         def services_installed(patch):
-            asg = ASG({})
-            status = asg.get_health(self.env, patch.get('server_name'))
+            asg = ASG(patch.get('server_name'), self.env)
+            status = asg.get_health()
             return status['is_healthy'] and status['instances_count'] == patch.get('scale_up_count')
         # Check if ASGs have installed all services
         ready_asgs = [ patch for patch in patches if services_installed(patch) ]
@@ -76,8 +76,8 @@ class PatchProcess(object):
         if not patches:
             return
         def has_scaled_in(patch):
-            asg = ASG({})
-            status = asg.get_health(self.env, patch.get('server_name'))
+            asg = ASG(patch.get('server_name'), self.env)
+            status = asg.get_health()
             return status['is_healthy'] and status['instances_count'] == patch.get('instances_count')
         # Check if ASGs have finished scaling in
         scaled_in_asgs = [ patch for patch in patches if has_scaled_in(patch) ]

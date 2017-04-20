@@ -5,12 +5,12 @@ import time
 import datetime
 
 from progressbar import ProgressBar, FormatLabel, Timer, Bar, RotatingMarker, Percentage
-from envmgr.commands.patching.patch_process import PatchProcess
-from envmgr.commands.patching.patch_states import PatchStates
-from envmgr.commands.patching.patch_file import PatchFile
-from envmgr.commands.patching.patch_progress import PatchProgress
-from envmgr.commands.patching.patch_table import patch_table
-from envmgr.commands.user_confirmation import confirm
+from emcli.commands.patching.patch_process import PatchProcess
+from emcli.commands.patching.patch_states import PatchStates
+from emcli.commands.patching.patch_file import PatchFile
+from emcli.commands.patching.patch_progress import PatchProgress
+from emcli.commands.patching.patch_table import patch_table
+from emcli.commands.user_confirmation import confirm
 
 from builtins import input
 
