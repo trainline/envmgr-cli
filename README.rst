@@ -167,7 +167,7 @@ For convenience this is also available via the included `makefile`:
 
     make test
 
-.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/w50g5yb1fh4qh3rq?svg=true
+.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/w50g5yb1fh4qh3rq/branch/master?svg=true
     :target: https://ci.appveyor.com/project/duncanhall/envmgr-cli/branch/master
 
 .. |travis| image:: https://travis-ci.org/trainline/envmgr-cli.svg?branch=master
