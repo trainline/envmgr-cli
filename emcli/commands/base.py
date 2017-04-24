@@ -55,7 +55,7 @@ class BaseCommand(object):
         pwrd = self.get_config('pass', 'ENVMGR_PASS')
         headers = {'User-Agent':user_agent}
         #TODO: envmgr config currently does not accept the above header
-        envmgr.config(host, user, b64encode(pwrd))
+        envmgr.config(host, user, b64encode(pwrd.encode('ascii')))
 
     def _register(self, cmd, action, with_spinner=True):
         """
