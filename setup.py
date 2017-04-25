@@ -32,7 +32,7 @@ setup(
         'semver',
         'appdirs',
         'progressbar2',
-        'envmgr-lib==0.2.0'
+        'envmgr-lib==0.2.1'
     ],
     setup_requires = pytest_runner,
     tests_require = [
