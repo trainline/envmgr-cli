@@ -1,9 +1,7 @@
 # Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 import time
-import os 
 
-from json import dumps
 from envmgr import Service
 from emcli.commands.base import BaseCommand
 
@@ -27,8 +25,15 @@ class ServiceCommand(BaseCommand):
             message = [ self.format_health(service) for service in result ]
             is_healthy = all( service.get("OverallHealth") == "Healthy" for service in result )
         else:
-            message = self.format_health(result)
-            is_healthy = result.get("OverallHealth") == "Healthy"
+            n = len(result)
+            if n == 0:
+                message = "{0} is not expected here and is not running here".format(slice)
+                is_healthy = False
+            elif n > 1:
+                message = "Expected one service but found {0}".format(n)
+                is_healthy = False
+            else:
+                (is_healthy, message) = self.get_health_summary(env, service, slice, result[0])
         self.show_result(result, message)
         return is_healthy
 
@@ -60,3 +65,16 @@ class ServiceCommand(BaseCommand):
         upstream = slice.get('UpstreamName')
         return "{0} is {1} ({2})".format(name, status, upstream)
 
+    @staticmethod
+    def get_health_summary(env, service, slice, summary):
+        desired_count = summary.get('desiredCount')
+        desired_and_healthy_count = summary.get('desiredAndHealthyCount')
+        undesired_count = summary.get('undesiredCount')
+        service_name = "the {0} slice of {1} in {2}".format(slice, service, env)
+        is_healthy = desired_and_healthy_count >= desired_count and undesired_count <= 0
+        messages = filter(lambda x: x != None, [
+            "is healthy" if is_healthy else None,
+            "may be routing requests to {0} unintended instance{1}".format(undesired_count, "s" if undesired_count > 1 else "") if undesired_count > 0 else None,
+            "is not operating at capacity ({0}/{1} healthy)".format(desired_and_healthy_count, desired_count) if desired_and_healthy_count < desired_count else None
+        ])
+        return (is_healthy, "{0} {1}".format(service_name, " and ".join(messages)))
