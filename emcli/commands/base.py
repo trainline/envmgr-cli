@@ -7,6 +7,7 @@ import sys
 import platform
 import logging
 import envmgr
+import getpass
 
 from base64 import b64encode
 from future.utils import viewitems
@@ -52,7 +53,7 @@ class BaseCommand(object):
 
         host = self.get_config('host', 'ENVMGR_HOST')
         user = self.get_config('user', 'ENVMGR_USER')
-        pwrd = self.get_config('pass', 'ENVMGR_PASS')
+        pwrd = self.get_password('pass', 'ENVMGR_PASS')
         headers = {'User-Agent':user_agent}
         envmgr.config(host, user, b64encode(pwrd.encode('ascii')), default_headers=headers)
 
@@ -98,14 +99,20 @@ class BaseCommand(object):
         if not self.opts.get('json') and not self.opts.get('ci-mode') and self.spinner is not None:
             self.spinner.stop()
 
-    def get_config(self, option, env_name):
+    def get_password(self, option, env_name):
+        password = self.get_config(option, env_name, required=self.opts.get('ci-mode'))
+        if password is None:
+            password = getpass.getpass()
+        return password
+
+    def get_config(self, option, env_name, required=True):
         value = None
         if option in self.opts:
             value = self.opts[option]
         else:
             value = os.getenv(env_name)
 
-        if value is None:
+        if required and value is None:
             raise ValueError("--{0} was not given and no {1} value is set.".format(option, env_name))
         else:
             return value
