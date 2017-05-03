@@ -18,21 +18,22 @@ class PatchOperation(object):
     
     proc = None
     operation = {}
-    
+    is_refresh = False
+
     @staticmethod
-    def get_current_status(cluster, env):
-        current_operation = PatchOperation.get_current(cluster, env)
+    def get_current_status(cluster, env, is_refresh=False):
+        current_operation = PatchOperation.get_current(cluster, env, is_refresh)
         if current_operation is not None:
             patches = current_operation.get('patches')
             return patch_table(patches, PatchStates.get_friendly_name)
     
     @staticmethod
-    def is_in_progress(cluster, env):
-        return PatchOperation.get_current(cluster, env) is not None
+    def is_in_progress(cluster, env, is_refresh=False):
+        return PatchOperation.get_current(cluster, env, is_refresh) is not None
 
     @staticmethod
-    def get_current(cluster, env):
-        return PatchFile.get_contents(cluster, env)
+    def get_current(cluster, env, is_refresh=False):
+        return PatchFile.get_contents(cluster, env, is_refresh)
     
     @staticmethod
     def get_patches_by_availability(patches, available):
@@ -51,17 +52,17 @@ class PatchOperation(object):
         return description
 
     @staticmethod
-    def kill(cluster, env):
-        if not PatchOperation.is_in_progress(cluster, env):
+    def kill(cluster, env, is_refresh=False):
+        if not PatchOperation.is_in_progress(cluster, env, is_refresh):
             print('No pending patch operation found for {0} in {1}'.format(cluster, env))
         else:
             message = ['', 'This will kill the current patch operation:']
-            message.append(PatchOperation.get_current_status(cluster, env))
+            message.append(PatchOperation.get_current_status(cluster, env, is_refresh))
             message.extend(('Scale in/out operations currently in progress will not be affected.', ''))
             message.append('Are you sure you want to kill this operation? (y/n) ')
             if confirm(message):
-                report = PatchFile.write_report(cluster, env)
-                PatchFile.delete(cluster, env)
+                report = PatchFile.write_report(cluster, env, is_refresh)
+                PatchFile.delete(cluster, env, is_refresh)
                 print('Patch operation deleted. Status report written to {0}'.format(report))
     
     def __init__(self, api):
@@ -71,9 +72,10 @@ class PatchOperation(object):
         patches = self.operation.get('patches', [])
         return [ patch for patch in patches if patch.get('state') == state ]
 
-    def run(self, patch_operation, cluster, env):
+    def run(self, patch_operation, cluster, env, is_refresh=False):
+        PatchOperation.is_refresh = is_refresh
         self.operation = self.get_operation(patch_operation, cluster, env)
-        self.proc = PatchProcess(self.api, self.operation)
+        self.proc = PatchProcess(self.api, self.operation, is_refresh)
         self.progress = PatchProgress()
         self.progress.start(self.operation.get('start'))
         self.check_status()
@@ -100,7 +102,7 @@ class PatchOperation(object):
             
             if all([ patch.get('state') == PatchStates.STATE_COMPLETE for patch in patches ]):
                 self.progress.finish(len(patches))
-                PatchFile.delete(self.operation.get('cluster'), self.operation.get('env'))
+                PatchFile.delete(self.operation.get('cluster'), self.operation.get('env'), PatchOperation.is_refresh)
                 return
             else:
                 time.sleep(10)        

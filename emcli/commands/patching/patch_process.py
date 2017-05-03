@@ -8,11 +8,12 @@ from emcli.commands.patching.patch_file import PatchFile
 
 class PatchProcess(object):
 
-    def __init__(self, api, operation):
+    def __init__(self, api, operation, is_refresh=False):
         self.api = api
         self.operation = operation
         self.cluster = operation.get('cluster')
         self.env = operation.get('env')
+        self.is_refresh = is_refresh
 
     def update_launch_configs(self, patches):
         if not patches:
@@ -92,7 +93,7 @@ class PatchProcess(object):
             self.write_to_file()
 
     def write_to_file(self):
-        PatchFile.write_content(self.cluster, self.env, self.operation)
+        PatchFile.write_content(self.cluster, self.env, self.operation, self.is_refresh)
 
 
 
