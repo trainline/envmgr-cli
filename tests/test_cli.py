@@ -29,6 +29,8 @@ TEST_COMMANDS = [
     ('wait-for toggle to blue MyService in staging',        'emcli.cli.ToggleCommand.run'),
     ('get A-team patch status in prod',                     'emcli.cli.PatchCommand.run'),
     ('patch team in prod',                                  'emcli.cli.PatchCommand.run'),
+    ('get team asg cycle status in staging',                'emcli.cli.CycleCommand.run'),
+    ('cycle team asgs in prod',                             'emcli.cli.CycleCommand.run'),
     ('verify',                                              'emcli.cli.VerifyCommand.run')
 ]
 

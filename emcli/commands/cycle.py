@@ -24,7 +24,7 @@ class CycleCommand(BaseCommand):
         super(CycleCommand, self).__init__(options, *args, **kwargs)
         self.api = EmClient()
         self._register(('get', 'status'), self.describe_status)
-        self._register(('refresh', '!status'), self.run_patch_update)
+        self._register(('cycle', '!status'), self.run_patch_update)
 
     def describe_status(self, cluster, env):
         if PatchOperation.is_in_progress(cluster, env, True):
