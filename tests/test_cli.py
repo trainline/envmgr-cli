@@ -37,18 +37,29 @@ class TestCLI(TestCase):
     @parameterized.expand( TEST_COMMANDS )
     def test_command(self, cmd, expected_call):
         with patch(expected_call) as run:
-            self.assert_command(cmd, run)
+            self.assert_command_with_default_opts(cmd, run)
 
     @parameterized.expand( TEST_COMMANDS )
     def test_command_with_json(self, cmd, expected_call):
         with patch(expected_call) as run:
-            self.assert_command(cmd + ' --json', run)
-    
+            self.assert_command_with_default_opts(cmd + ' --json', run)
+
+    def test_command_without_password(self):
+        required_opts = '--host=acme.com --user=roadrunner'
+        with patch('getpass.getpass') as getpass:
+            with patch('emcli.cli.VerifyCommand.run') as verify:
+                getpass.return_value = 'pa$$word'
+                self.assert_command('verify', verify, required_opts)
+                getpass.assert_called_once()
+
     def test_custom_except_hook(self):
         self.assertEqual(sys.excepthook, except_hook)
 
-    def assert_command(self, cmd, func):
+    def assert_command_with_default_opts(self, cmd, func):
         required_opts = '--host=acme.com --user=roadrunner --pass=pa$$word'
+        self.assert_command(cmd, func, required_opts)
+
+    def assert_command(self, cmd, func, required_opts):
         argv = ['/usr/local/bin/envmgr'] + cmd.split(' ') + required_opts.split(' ')
         with patch.object(sys, 'argv', argv):
             main()
