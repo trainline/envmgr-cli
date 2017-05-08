@@ -8,5 +8,6 @@ from .patch import *
 from .verify import *
 from .toggle import *
 from .instance import *
+from .cycle import *
 from .base import *
 

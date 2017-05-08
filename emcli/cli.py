@@ -117,6 +117,20 @@ Usage:
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
+    envmgr cycle <cluster> asgs in <env>
+        [(--match=<asg>... | --ignore=<asg>... | --whitelist=<file> | --blacklist=<file>)] 
+        [--kill] 
+        [(--json | --ci-mode)]
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+        [--verbose]
+    envmgr get <cluster> asg cycle status in <env>
+        [(--match=<asg>... | --ignore=<asg>... | --whitelist=<file> | --blacklist=<file>)] 
+        [--kill] 
+        [(--json | --ci-mode)]
+        [--host=<host_name>] 
+        [--user=<user_name> --pass=<password>]
+        [--verbose]
     envmgr verify
         [(--json | --ci-mode)]
         [--host=<host_name>] 
@@ -171,7 +185,7 @@ from inspect import getmembers, isclass
 from appdirs import user_log_dir
 from docopt import docopt
 from . import __version__ as VERSION
-from emcli.commands import AsgCommand, DeployCommand, PublishCommand, ServiceCommand, ToggleCommand, VerifyCommand, InstanceCommand, PatchCommand
+from emcli.commands import AsgCommand, DeployCommand, PublishCommand, ServiceCommand, ToggleCommand, VerifyCommand, InstanceCommand, PatchCommand, CycleCommand
 from emcli.commands.utils.file_utils import safe_create_dir_path
 
 commands = {
@@ -179,6 +193,7 @@ commands = {
         'instances':InstanceCommand,
         'deploy':DeployCommand,
         'patch':PatchCommand,
+        'cycle':CycleCommand,
         'publish':PublishCommand,
         'service':ServiceCommand,
         'toggle':ToggleCommand,
@@ -207,7 +222,7 @@ def main():
     """Main CLI entrypoint."""
     options = docopt(__doc__, version=VERSION)
     setup_logger(options.get('--verbose', False))
-    priority_order = ["asg", "instances", "deploy", "patch", "toggle", "upstream", "publish", "verify", "service"]
+    priority_order = ["cycle", "asg", "instances", "deploy", "patch", "toggle", "upstream", "publish", "verify", "service"]
     cmd_opts = options.copy()
 
     if cmd_opts["<service>"] is not None:
