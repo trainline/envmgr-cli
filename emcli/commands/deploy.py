@@ -1,6 +1,7 @@
 # Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 import time
+import sys
 
 from envmgr import Service
 from json import dumps
@@ -24,7 +25,7 @@ class DeployCommand(BaseCommand):
             self.show_result(result, "Deployment dry run was successful")
         else:
             self.show_result(result, result.get('id'))
-    
+
     def get_deploy_status(self, deploy_id):
         result = Service.get_deployment_by_id(deploy_id)
         self.show_result(result, "Deployment: {0}".format(result.get('Value').get('Status')))
@@ -34,8 +35,9 @@ class DeployCommand(BaseCommand):
         while True:
             result = self.get_deploy_status(deploy_id)
             status = result.get('Value').get('Status')
-            if status == "Failed" or status == "Success":
+            if status == "Failed" and self.opts.get('ci-mode'):
+                sys.exit(1)
+            elif status == "Failed" or status == "Success":
                 return
             else:
                 time.sleep(10)
-
