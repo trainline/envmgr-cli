@@ -1,6 +1,7 @@
 # Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
 import sys
+import os
 
 from unittest import TestCase
 from mock import patch
@@ -34,6 +35,15 @@ TEST_COMMANDS = [
     ('verify',                                              'emcli.cli.VerifyCommand.run')
 ]
 
+og_getenv = os.getenv
+
+def no_env_config(*args):
+    var_name = args[0]
+    if var_name.startswith('ENVMGR_'):
+        return None
+    else:
+        return og_getenv(var_name, '')
+
 class TestCLI(TestCase):
 
     @parameterized.expand( TEST_COMMANDS )
@@ -46,17 +56,23 @@ class TestCLI(TestCase):
         with patch(expected_call) as run:
             self.assert_command_with_default_opts(cmd + ' --json', run)
 
-    def test_command_without_password(self):
+    @parameterized.expand( TEST_COMMANDS )
+    @patch('os.getenv', wraps=no_env_config)
+    def test_command_without_password(self, cmd, expected_call, getenv):
+        with patch(expected_call) as run:
+            self.assert_command_with_no_pass(cmd, run)
+
+    @patch('getpass.getpass', return_value='pa$$word')
+    def assert_command_with_no_pass(self, cmd, func, getpass):
         required_opts = '--host=acme.com --user=roadrunner'
-        with patch('getpass.getpass') as getpass:
-            with patch('emcli.cli.VerifyCommand.run') as verify:
-                getpass.return_value = 'pa$$word'
-                self.assert_command('verify', verify, required_opts)
-                getpass.assert_called_once()
+        argv = ['/usr/local/bin/envmgr'] + cmd.split(' ') + required_opts.split(' ')
+        with patch.object(sys, 'argv', argv):
+            main()
+            getpass.assert_called_once()
 
     def test_custom_except_hook(self):
         self.assertEqual(sys.excepthook, except_hook)
-
+    
     def assert_command_with_default_opts(self, cmd, func):
         required_opts = '--host=acme.com --user=roadrunner --pass=pa$$word'
         self.assert_command(cmd, func, required_opts)
