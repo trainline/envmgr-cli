@@ -154,7 +154,7 @@ Options:
     -d --dry-run                    Validate a deployment request without actually performing a deployment.
     -h --host=<host_name>           Environment Manager hostname to override environment variable value.
     -u --user=<user_name>           Username to override environment variable value.
-    -p --pass=<password>            Password to overide environment variable value.
+    -p --pass=<password>            Password to override environment variable value.
     -j --json                       Output the raw json response from Environment Manager.
     -v --verbose                    Output verbose logging straight to stdout instead of logfile
     -c --ci-mode                    Only provide output that is safe for Contiuous Integration environments.
