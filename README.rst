@@ -1,5 +1,5 @@
-envmgr |pypi| |travis| |appveyor|
-==================================
+envmgr |pypi| |travis| |appveyor| |dockerautomated| |dockerpulls|
+=================================================================
 
 A cross-platform CLI client for `Environment
 Manager <https://github.com/trainline/environment-manager>`__
@@ -14,7 +14,7 @@ Install
 ::
 
     pip install envmgr-cli
- 
+
 
 See `Configuration`_ for further install instructions.
 
@@ -96,7 +96,7 @@ Environment Manager.*
     envmgr schedule asg my-asg off in prod-1
 
     # Publish the file build-22.zip as version 1.2.9 of AwesomeService:
-    envmgr publish build-22.zip as AwesomeService 1.2.9 
+    envmgr publish build-22.zip as AwesomeService 1.2.9
 
     # Deploy the published version 1.2.9 of AwesomeService into the prod-1 environment:
     envmgr deploy AwesomeService 1.2.9 in prod-1
@@ -167,6 +167,41 @@ For convenience this is also available via the included `makefile`:
 
     make test
 
+
+Docker
+------
+
+If you want, you can use our automated container builds
+
+Usage
+^^^^^
+
+::
+
+    docker run -it --rm \
+    -e ENVMGR_USER=user
+    -e ENVMGR_PASS=password
+    -e ENVMGR_HOST=foo.bar
+    trainline/envmgr-cli:latest envmgr {YOUR_ARGS}
+
+
+Example
+^^^^^^^
+
+::
+
+    ~$ docker run -it --rm trainline/envmgr-cli envmgr --version
+    1.9.1
+
+
+Build
+^^^^^
+
+::
+
+    docker build -t {YOUR_NAME}/envmgr-cli .
+
+
 .. |appveyor| image:: https://ci.appveyor.com/api/projects/status/w50g5yb1fh4qh3rq/branch/master?svg=true
     :target: https://ci.appveyor.com/project/duncanhall/envmgr-cli/branch/master
 
@@ -174,4 +209,10 @@ For convenience this is also available via the included `makefile`:
     :target: https://travis-ci.org/trainline/envmgr-cli
 
 .. |pypi| image:: https://img.shields.io/badge/python-2.7%2C%203.4%2C%203.5%2C%203.6-blue.svg
-    :target: https://pypi.python.org/pypi/envmgr-cli/1.5.2
+    :target: https://pypi.python.org/pypi/envmgr-cli
+
+.. |dockerautomated| image:: https://img.shields.io/docker/automated/trainline/envmgr-cli.svg
+    :target: https://hub.docker.com/trainline/envmgr-cli
+
+.. |dockerpulls| image:: https://img.shields.io/docker/pulls/trainline/envmgr-cli.svg
+    :target: https://hub.docker.com/trainline/envmgr-cli
