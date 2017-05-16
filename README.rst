@@ -212,7 +212,7 @@ Build
     :target: https://pypi.python.org/pypi/envmgr-cli
 
 .. |dockerautomated| image:: https://img.shields.io/docker/automated/trainline/envmgr-cli.svg
-    :target: https://hub.docker.com/trainline/envmgr-cli
+    :target: https://hub.docker.com/r/trainline/envmgr-cli
 
 .. |dockerpulls| image:: https://img.shields.io/docker/pulls/trainline/envmgr-cli.svg
-    :target: https://hub.docker.com/trainline/envmgr-cli
+    :target: https://hub.docker.com/r/trainline/envmgr-cli
