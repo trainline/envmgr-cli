@@ -104,8 +104,11 @@ class PatchCommand(BaseCommand):
             self.show_result({}, message)
             return False
         else:
-            message.append('Do you want to continue? (y/n) ')
-            return confirm(message)
+            if self.opts.get('ci-mode'):
+                return True
+            else:
+                message.append('Do you want to continue? (y/n) ')
+                return confirm(message)
 
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None, whitelist=None, blacklist=None):
         # We're only interested in Windows as Linux instances auto-update
