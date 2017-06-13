@@ -24,7 +24,7 @@ class ToggleCommand(BaseCommand):
             status.total_upstreams,
             status.total_load_balancers
         )
-        self.show_result(status, desc)
+        self.show_result(status.__dict__, desc)
         return status
 
     def toggle_service_slices(self, service, env):
