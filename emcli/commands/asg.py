@@ -79,10 +79,18 @@ class AsgCommand(BaseCommand):
         return is_ready 
 
     def wait_for(self, env, name):
-        while True:
-            is_ready = self.get_status(env, name)
-            if is_ready:
-                return
+        start = time.time()
+        timeout = int(self.opts.get('timeout', 0))
+        should_continue = True
+        while should_continue:
+            elapsed = int(time.time() - start)
+            if timeout is not 0 and elapsed > timeout:
+                self.show_result({}, "Timeout exceeded")
+                should_continue = False
             else:
-                time.sleep(10)
+                is_ready = self.get_status(env, name)
+                if is_ready:
+                    return
+                else:
+                    time.sleep(10)
 

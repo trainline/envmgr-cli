@@ -65,23 +65,27 @@ Usage:
         [--user=<user_name> --pass=<password>]
         [--verbose]
     envmgr wait-for deploy <deploy_id> 
+        [--timeout=<timeout>]
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
     envmgr wait-for healthy <service> in <env> 
-        [<slice>] 
+        [<slice>]
+        [--timeout=<timeout>]
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
     envmgr wait-for asg <name> in <env> 
+        [--timeout=<timeout>]
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
     envmgr wait-for toggle to <slice> <service> in <env> 
         [--upstream=<upstream>]
+        [--timeout=<timeout>]
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
@@ -149,6 +153,7 @@ Options:
     -b --blacklist=<file>           Path to file containing line-separated list of ASG names to ignore when patching.
     -s --sort=<key>                 Sort the results by the given key
     -l --upstream=<upstream>        The name of the upstream to check
+    -x --timeout=<timeout>          Maximum number of seconds permitted in a wait-for operation
     -o --report                     Save a report to the current directory
     -k --kill                       Kills a currently running patch operation.
     -d --dry-run                    Validate a deployment request without actually performing a deployment.

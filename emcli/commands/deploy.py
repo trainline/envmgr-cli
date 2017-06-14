@@ -32,12 +32,20 @@ class DeployCommand(BaseCommand):
         return result
 
     def wait_for_deployment(self, deploy_id):
-        while True:
-            result = self.get_deploy_status(deploy_id)
-            status = result.get('Value').get('Status')
-            if status == "Failed" and self.opts.get('ci-mode'):
-                sys.exit(1)
-            elif status == "Failed" or status == "Success":
-                return
+        start = time.time()
+        timeout = int(self.opts.get('timeout', 0))
+        should_continue = True
+        while should_continue:
+            elapsed = int(time.time() - start)
+            if timeout is not 0 and elapsed > timeout:
+                self.show_result({}, "Timeout exceeded")
+                should_continue = False
             else:
-                time.sleep(10)
+                result = self.get_deploy_status(deploy_id)
+                status = result.get('Value').get('Status')
+                if status == "Failed" and self.opts.get('ci-mode'):
+                    sys.exit(1)
+                elif status == "Failed" or status == "Success":
+                    return
+                else:
+                    time.sleep(10)

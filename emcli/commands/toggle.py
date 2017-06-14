@@ -33,10 +33,18 @@ class ToggleCommand(BaseCommand):
         self.show_result(upstream, "{0} is now configured active for {1} in {2}".format(upstream.slice, service, env))
 
     def wait_for_toggle(self, slice, service, env):
-        while True:
-            status = self.get_upstream_status(slice, service, env)
-            if status.is_active:
-                return
+        start = time.time()
+        timeout = int(self.opts.get('timeout', 0))
+        should_continue = True
+        while should_continue:
+            elapsed = int(time.time() - start)
+            if timeout is not 0 and elapsed > timeout:
+                self.show_result({}, "Timeout exceeded")
+                should_continue = False
             else:
-                time.sleep(5)
+                status = self.get_upstream_status(slice, service, env)
+                if status.is_active:
+                    return
+                else:
+                    time.sleep(5)
 
