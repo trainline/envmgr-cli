@@ -13,6 +13,7 @@ class PublishCommand(BaseCommand):
         self._register('publish', self.publish_service_file)
 
     def publish_service_file(self, service, version, file):
+        env = self.opts.get('env')
         file_path = os.path.abspath(file)
         if not os.path.isfile(file_path):
             print("{0} is not a valid file".format(file))
@@ -21,7 +22,7 @@ class PublishCommand(BaseCommand):
         svc = Service(service) 
         file_size = self.convert_size(os.path.getsize(file_path))
         with open(file_path, 'rb') as file:
-            result = svc.publish(file, version)
+            result = svc.publish(file, version, env) if env else svc.publish(file, version)
         
         if result is True:
             self.show_result({'success':True}, '{0} {1} published {2}'.format(service, version, file_size))

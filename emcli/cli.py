@@ -95,7 +95,8 @@ Usage:
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
         [--verbose]
-    envmgr publish <file> as <service> <version> 
+    envmgr publish <file> as <service> <version>
+        [--env=<env>]
         [(--json | --ci-mode)] 
         [--host=<host_name>] 
         [--user=<user_name> --pass=<password>]
