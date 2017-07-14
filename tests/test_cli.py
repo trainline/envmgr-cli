@@ -25,6 +25,7 @@ TEST_COMMANDS = [
     ('get deploy status a2fbb0c0-ed4c-11e6-85b1',           'emcli.cli.DeployCommand.run'),
     ('wait-for deploy a2fbb0c0-ed4c-11e6-85b1',             'emcli.cli.DeployCommand.run'),
     ('publish build-22.zip as AcmeService 1.2.3',           'emcli.cli.PublishCommand.run'),
+    ('publish --env MyEnv build-22.zip as AcmeService 1.2.3',           'emcli.cli.PublishCommand.run'),
     ('toggle MyService in staging',                         'emcli.cli.ToggleCommand.run'),
     ('get upstream status for blue MyService in staging',   'emcli.cli.ToggleCommand.run'),
     ('wait-for toggle to blue MyService in staging',        'emcli.cli.ToggleCommand.run'),
