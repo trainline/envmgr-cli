@@ -47,16 +47,15 @@ class ServiceCommand(BaseCommand):
     def wait_for_healthy_service(self, service, env, slice=None):
         start = time.time()
         timeout = int(self.opts.get('timeout', 0))
-        should_continue = True
-        while should_continue:
+        while True:
             elapsed = int(time.time() - start)
             if timeout is not 0 and elapsed > timeout:
                 self.show_result({}, "Timeout exceeded")
-                should_continue = False
+                return 1
             else:
                 healthy = self.get_service_health(service, env, slice)
                 if healthy:
-                    return
+                    return 0
                 else:
                     time.sleep(5)
     

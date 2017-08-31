@@ -239,7 +239,6 @@ def main():
             logging.info('Running {0} command'.format(cmd))
             CommandClass = commands[cmd]
             command = CommandClass(options)
-            command.run()
-            return
+            return command.run()
 
     print("Unknown command")
