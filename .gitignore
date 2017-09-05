@@ -2,8 +2,10 @@ build
 dist
 *.egg-info
 *.pyc
-.cache
 *.swp
 *.coverage
 *.eggs
-.vscode/
+.*
+!.appveyor.yml
+!.gitignore
+!.travis.yml

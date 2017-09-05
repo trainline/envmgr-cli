@@ -7,7 +7,7 @@ import os
 
 from unittest import TestCase
 from emcli.commands import PatchCommand
-from nose_parameterized import parameterized, param
+from parameterized import parameterized, param
 from mock import patch
 from .helpers.api_test_case import APITestCase
 from .helpers.utils import mock_server, MOCK_ENV_VARS

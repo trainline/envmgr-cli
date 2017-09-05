@@ -6,7 +6,7 @@ import os
 from unittest import TestCase
 from mock import patch
 from emcli.cli import main, except_hook
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 TEST_COMMANDS = [
     ('get MockService health in prod',                      'emcli.cli.ServiceCommand.run'),

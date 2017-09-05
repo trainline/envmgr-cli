@@ -1,6 +1,4 @@
-
-
-from nose_parameterized import param
+from parameterized import param
 
 DEPLOY_SCENARIOS = [
     (
