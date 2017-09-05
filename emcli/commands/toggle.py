@@ -35,16 +35,14 @@ class ToggleCommand(BaseCommand):
     def wait_for_toggle(self, slice, service, env):
         start = time.time()
         timeout = int(self.opts.get('timeout', 0))
-        should_continue = True
-        while should_continue:
+        while True:
             elapsed = int(time.time() - start)
             if timeout is not 0 and elapsed > timeout:
                 self.show_result({}, "Timeout exceeded")
-                should_continue = False
+                return 1
             else:
                 status = self.get_upstream_status(slice, service, env)
                 if status.is_active:
-                    return
+                    return 0
                 else:
                     time.sleep(5)
-

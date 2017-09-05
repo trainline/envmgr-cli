@@ -86,7 +86,7 @@ class BaseCommand(object):
             (action, with_spinner) = command
             if with_spinner:
                 self.show_activity()
-            action(**self.cli_args)
+            return action(**self.cli_args)
         else:
             raise Exception('Unknown command')
 

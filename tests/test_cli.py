@@ -5,35 +5,35 @@ import os
 
 from unittest import TestCase
 from mock import patch
-from emcli.cli import main, except_hook
+from emcli.__main__ import main, except_hook
 from parameterized import parameterized
 
 TEST_COMMANDS = [
-    ('get MockService health in prod',                      'emcli.cli.ServiceCommand.run'),
-    ('get AcmeService health in prod green',                'emcli.cli.ServiceCommand.run'),
-    ('get CoolService active slice in dev',                 'emcli.cli.ServiceCommand.run'),
-    ('get CoolService inactive slice in staging',           'emcli.cli.ServiceCommand.run'),
-    ('wait-for healthy CoolService in prod',                'emcli.cli.ServiceCommand.run'),
-    ('check asg mock-asg exists in prod',                   'emcli.cli.AsgCommand.run'),
-    ('get asg mock-asg status in prod',                     'emcli.cli.AsgCommand.run'),
-    ('get asg mock-asg schedule in staging',                'emcli.cli.AsgCommand.run'),
-    ('get asg mock-asg health in test',                     'emcli.cli.AsgCommand.run'),
-    ('wait-for asg mock-asg in prod',                       'emcli.cli.AsgCommand.run'),
-    ('set asg mock-asg schedule off in staging',            'emcli.cli.AsgCommand.run'),
-    ('get instances out of date by 30 days --env=prod',     'emcli.cli.InstanceCommand.run'),
-    ('deploy MyService 1.4.0 in prod',                      'emcli.cli.DeployCommand.run'),
-    ('get deploy status a2fbb0c0-ed4c-11e6-85b1',           'emcli.cli.DeployCommand.run'),
-    ('wait-for deploy a2fbb0c0-ed4c-11e6-85b1',             'emcli.cli.DeployCommand.run'),
-    ('publish build-22.zip as AcmeService 1.2.3',           'emcli.cli.PublishCommand.run'),
-    ('publish --env MyEnv build-22.zip as AcmeService 1.2.3',           'emcli.cli.PublishCommand.run'),
-    ('toggle MyService in staging',                         'emcli.cli.ToggleCommand.run'),
-    ('get upstream status for blue MyService in staging',   'emcli.cli.ToggleCommand.run'),
-    ('wait-for toggle to blue MyService in staging',        'emcli.cli.ToggleCommand.run'),
-    ('get A-team patch status in prod',                     'emcli.cli.PatchCommand.run'),
-    ('patch team in prod',                                  'emcli.cli.PatchCommand.run'),
-    ('get team asg cycle status in staging',                'emcli.cli.CycleCommand.run'),
-    ('cycle team asgs in prod',                             'emcli.cli.CycleCommand.run'),
-    ('verify',                                              'emcli.cli.VerifyCommand.run')
+    ('get MockService health in prod',                      'emcli.__main__.ServiceCommand.run'),
+    ('get AcmeService health in prod green',                'emcli.__main__.ServiceCommand.run'),
+    ('get CoolService active slice in dev',                 'emcli.__main__.ServiceCommand.run'),
+    ('get CoolService inactive slice in staging',           'emcli.__main__.ServiceCommand.run'),
+    ('wait-for healthy CoolService in prod',                'emcli.__main__.ServiceCommand.run'),
+    ('check asg mock-asg exists in prod',                   'emcli.__main__.AsgCommand.run'),
+    ('get asg mock-asg status in prod',                     'emcli.__main__.AsgCommand.run'),
+    ('get asg mock-asg schedule in staging',                'emcli.__main__.AsgCommand.run'),
+    ('get asg mock-asg health in test',                     'emcli.__main__.AsgCommand.run'),
+    ('wait-for asg mock-asg in prod',                       'emcli.__main__.AsgCommand.run'),
+    ('set asg mock-asg schedule off in staging',            'emcli.__main__.AsgCommand.run'),
+    ('get instances out of date by 30 days --env=prod',     'emcli.__main__.InstanceCommand.run'),
+    ('deploy MyService 1.4.0 in prod',                      'emcli.__main__.DeployCommand.run'),
+    ('get deploy status a2fbb0c0-ed4c-11e6-85b1',           'emcli.__main__.DeployCommand.run'),
+    ('wait-for deploy a2fbb0c0-ed4c-11e6-85b1',             'emcli.__main__.DeployCommand.run'),
+    ('publish build-22.zip as AcmeService 1.2.3',           'emcli.__main__.PublishCommand.run'),
+    ('publish --env MyEnv build-22.zip as AcmeService 1.2.3',           'emcli.__main__.PublishCommand.run'),
+    ('toggle MyService in staging',                         'emcli.__main__.ToggleCommand.run'),
+    ('get upstream status for blue MyService in staging',   'emcli.__main__.ToggleCommand.run'),
+    ('wait-for toggle to blue MyService in staging',        'emcli.__main__.ToggleCommand.run'),
+    ('get A-team patch status in prod',                     'emcli.__main__.PatchCommand.run'),
+    ('patch team in prod',                                  'emcli.__main__.PatchCommand.run'),
+    ('get team asg cycle status in staging',                'emcli.__main__.CycleCommand.run'),
+    ('cycle team asgs in prod',                             'emcli.__main__.CycleCommand.run'),
+    ('verify',                                              'emcli.__main__.VerifyCommand.run')
 ]
 
 og_getenv = os.getenv

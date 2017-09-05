@@ -44,7 +44,7 @@ setup(
     ],
     entry_points = {
         'console_scripts': [
-            'envmgr=emcli.cli:main',
+            'envmgr=emcli.__main__:main',
         ],
     },
 )
