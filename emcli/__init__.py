@@ -1,4 +1,3 @@
 # Copyright (c) Trainline Limited, 2017. All rights reserved. See LICENSE.txt in the project root for license information.
 
-__version__ = '1.10.1a1'
-
+__version__ = '1.11.0a1'
