@@ -1,5 +1,4 @@
-    
-from nose_parameterized import param
+from parameterized import param
 
 LATEST_STABLE_WINDOWS_APP = 'windows-2012r2-app-7.3.2'
 LATEST_STABLE_WINDOWS_SECURE = 'windows-2012r2-secureapp-7.3.0'

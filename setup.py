@@ -12,7 +12,7 @@ with open(join(this_dir, 'README.rst'), encoding='utf-8') as file:
     long_description = file.read()
 
 needs_pytest = {'pytest', 'test'}.intersection(sys.argv)
-pytest_runner = ['pytest-runner', 'nose'] if needs_pytest else []
+pytest_runner = ['pytest-runner'] if needs_pytest else []
 
 setup(
     name = 'envmgr-cli',
@@ -25,22 +25,22 @@ setup(
     license = 'Apache 2.0',
     packages = find_packages(exclude=['tests*']),
     install_requires = [
-        'docopt',
-        'simplejson',
-        'tabulate',
-        'future',
-        'semver',
-        'appdirs',
-        'progressbar2',
+        'docopt~=0.6.2',
+        'simplejson~=3.11.1',
+        'tabulate~=0.7.7',
+        'future~=0.16.0',
+        'semver~=2.7.7',
+        'appdirs~=1.4.3',
+        'progressbar2~=3.30.2',
         'envmgr-lib==0.3.0'
     ],
     setup_requires = pytest_runner,
     tests_require = [
-        'pytest',
-        'mock',
-        'nose',
-        'nose-parameterized',
-        'responses'
+        'pytest~=3.0',
+        'mock~=2.0.0',
+        'nose~=1.3.7',
+        'parameterized~=0.6.1',
+        'responses~=0.5.1'
     ],
     entry_points = {
         'console_scripts': [
