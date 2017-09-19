@@ -113,7 +113,6 @@ class PatchCommand(BaseCommand):
     def get_patch_requirements(self, cluster, env, from_ami=None, to_ami=None, whitelist=None, blacklist=None):
         # We're only interested in Windows as Linux instances auto-update
         self.amis = self.api.get_images()
-        self.amis = [ ami for ami in self.amis if ami.get('Platform') == 'Windows' ]
         self.validate_ami_compatibility(from_ami, to_ami)
         
         # List of clusters' servers with AMI info

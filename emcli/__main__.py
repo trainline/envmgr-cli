@@ -190,7 +190,10 @@ import traceback
 from inspect import getmembers, isclass
 from appdirs import user_log_dir
 from docopt import docopt
-from . import __version__ as VERSION
+try:
+    from . import __version__ as VERSION
+except ValueError:
+    VERSION = "0.0.0" # When running locally and debugging
 from emcli.commands import AsgCommand, DeployCommand, PublishCommand, ServiceCommand, ToggleCommand, VerifyCommand, InstanceCommand, PatchCommand, CycleCommand
 from emcli.commands.utils.file_utils import safe_create_dir_path
 
@@ -242,3 +245,7 @@ def main():
             return command.run()
 
     print("Unknown command")
+
+# Allow local execution for debugging
+if __name__ == "__main__":
+    main()
