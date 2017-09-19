@@ -30,7 +30,7 @@ class ToggleCommand(BaseCommand):
     def toggle_service_slices(self, service, env):
         svc = Service(service, env)
         upstream = svc.toggle()
-        self.show_result(upstream, "{0} is now configured active for {1} in {2}".format(upstream.slice, service, env))
+        self.show_result(upstream.__dict__, "{0} is now configured active for {1} in {2}".format(upstream.slice, service, env))
 
     def wait_for_toggle(self, slice, service, env):
         start = time.time()
