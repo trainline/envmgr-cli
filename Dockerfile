@@ -7,6 +7,7 @@ RUN \
 cd /build && \
 python setup.py install && \
 rm -rf /build
+RUN apk add --no-cache jq
 
 ENTRYPOINT []
 CMD ["envmgr"]
