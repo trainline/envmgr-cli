@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+## [1.12.3] 02-11-2017
+
+### Fixed
+- Corrected CLI version info and updated changelog.
+
+## [1.12.2] 02-11-2017
+
+### Changed
+- Added `jq` into Docker image.
+
 ## [1.12.1] 20-09-2017
 
 ### Changed
