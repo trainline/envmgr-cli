@@ -230,6 +230,6 @@ class PatchCommand(BaseCommand):
             if from_name is None:
                 raise ValueError('You must specify --from-ami if --to-ami is given')
         if from_ami is not None and to_ami is not None:
-            if from_ami['AmiType'] != to_ami['AmiType']:
-                raise ValueError('AMI types for from_ami and to_ami must match')
+            if from_ami['Platform'] != to_ami['Platform']:
+                raise ValueError('AMI platforms must match')
 
