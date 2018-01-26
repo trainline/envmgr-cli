@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
-## [1.13.0] 26-01-2018
+## [1.13.1] 26-01-2018
 
 ### Changed
 - You are no longer prevented from patching from one AMI to another. The platform is the only thing that must remain the same between AMIs.
