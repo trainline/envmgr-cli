@@ -71,10 +71,10 @@ class AsgCommand(BaseCommand):
         if is_ready:
             self.show_result(result, "{0} is ready for deployments".format(name))
         else:
-            n_total = result.get('InstancesTotalCount')
-            states = map(lambda state,count: "{0}={1}".format(state, count), 
-                    result.get('InstancesByLifecycleState').iteritems())
-            self.show_result(result, "{0} is not ready for deployment (instances: {1}, Total={2})".format(name, ", ".join(states), n_total))
+            states = []
+            for state, count in result.get('InstancesByLifecycleState').iteritems():
+                states.append("{0}={1}".format(state, count))
+            self.show_result(result, "{0} is not ready for deployment (instances: {1}, Total={2})".format(name, ", ".join(states), len(states)))
 
         return is_ready 
 
