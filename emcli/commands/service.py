@@ -78,7 +78,7 @@ class ServiceCommand(BaseCommand):
         desired_and_healthy_count = summary.get('desiredAndHealthyCount')
         undesired_count = summary.get('undesiredCount')
         service_name = "the {0} slice of {1} in {2}".format(slice, service, env)
-        is_healthy = desired_and_healthy_count >= desired_count and undesired_count <= 0
+        is_healthy = desired_and_healthy_count >= desired_count
         messages = filter(lambda x: x != None, [
             "is healthy" if is_healthy else None,
             "may be routing requests to {0} unintended instance{1}".format(undesired_count, "s" if undesired_count > 1 else "") if undesired_count > 0 else None,

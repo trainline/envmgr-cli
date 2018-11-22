@@ -28,8 +28,8 @@ class TestServiceCommandMethods(TestCase):
             'desiredAndHealthyCount': 1,
             'undesiredCount': 1
         })
-        assert is_healthy == False
-        assert message == 'the blue slice of my-svc in my-env may be routing requests to 1 unintended instance'
+        assert is_healthy == True
+        assert message == 'the blue slice of my-svc in my-env is healthy and may be routing requests to 1 unintended instance'
 
     def test_get_health_summary_unhealthy_and_undesired(self):
         (is_healthy, message) = ServiceCommand.get_health_summary('my-env', 'my-svc', 'blue', {
